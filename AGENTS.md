@@ -1,6 +1,6 @@
 # AGENTS.md - Agent 开发规范
 
-本文档为 AI Agent 在本项目中运行提供上下文信息。
+为 AI Agent 在本项目中运行提供上下文信息。
 
 ---
 
@@ -8,47 +8,33 @@
 
 - **技术栈**: Vue 2.7 + Vite 5 + Vue Router 3
 - **包管理器**: npm
-- **构建工具**: Vite
-- **路由模式**: hash 模式（配置于 src/router/index.js）
+- **路由模式**: hash 模式
 
 ---
 
 ## 命令
 
-### 开发
+### 开发与构建
 ```bash
 npm run dev        # 启动开发服务器 http://localhost:3000
-```
-
-### 构建
-```bash
 npm run build      # 生产构建到 dist/
 npm run preview    # 本地预览生产构建
 ```
 
 ### 测试 (Vitest)
 ```bash
-npm run test         # 监听模式运行测试
-npm run test:run     # 运行一次测试
-npm run test:ui      # UI 模式运行测试
+npm run test         # 监听模式
+npm run test:run     # 运行一次
+npm run test:ui      # UI 模式
 
 # 运行单个测试文件
 npm run test:run -- src/__tests__/auth.spec.js
 npm run test:run -- src/__tests__/Login.spec.js
 ```
 
-### 代码检查
-> **尚未配置** - 未安装 ESLint/Prettier。
-
 ---
 
 ## 代码规范
-
-### 通用原则
-- 优先写清晰可读的代码，而非炫技
-- 保持函数短小专注（单一职责）
-- 使用有意义的命名 - 避免使用单字母（循环变量除外）
-- 注释说明**原因**，而非**做了什么**
 
 ### Vue 2 组件结构
 ```vue
@@ -67,7 +53,8 @@ export default {
   },
   data() { return { localState: '' } },
   computed: { filteredItems() { return this.items.filter(i => i.active) } },
-  methods: { handleClick() {} }
+  methods: { handleClick() {} },
+  beforeDestroy() {}
 }
 </script>
 
@@ -117,10 +104,8 @@ async function loadData() {
 
 ### Vue Router
 ```javascript
-// 路由懒加载
 const Admin = () => import('@/views/Admin.vue')
 
-// 导航守卫
 router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'Login', query: { redirect: to.fullPath } })
@@ -147,24 +132,12 @@ src/
 
 ---
 
-## 自定义 Agents
-
-项目配置了以下 agents（位于 `.opencode/agents/`）：
-
-| Agent | 描述 | 使用方式 |
-|-------|------|----------|
-| project-manager | 项目经理，协调完整开发流程 | `@project-manager 创建登录页` |
-| product-manager | 需求分析，输出需求文档 | `@product-manager 分析需求` |
-| ui-designer | 调用 ui-ux-pro-max 生成设计 | `@ui-designer 生成设计文档` |
-| frontend-developer | 前端开发，响应走查/缺陷 | `@frontend-developer 开发页面` |
-
----
-
 ## 重要说明
 
-### Vue 2 特定
-- 使用 `beforeDestroy` 或 `beforeUnmount`
+### Vue 2.7 特定
+- 使用 `beforeDestroy` 或 `beforeUnmount`（2.7 两者兼容）
 - 数组/对象 props 需要工厂函数：`default: () => []`
+- 2.7 支持部分 Composition API（如 `reactive`, `computed`）
 
 ### Vite 特定
 - 使用 `import.meta.env` 而非 `process.env`
@@ -178,4 +151,16 @@ src/
 ---
 
 ## 添加新依赖
+
 添加任何包之前检查是否兼容 Vue 2 和 Node 18+。常用包：`lodash-es`, `dayjs`, `axios`, `vuex`。
+
+---
+
+## 自定义 Agents
+
+| Agent | 描述 |
+|-------|------|
+| project-manager | 协调完整开发流程 |
+| product-manager | 需求分析 |
+| ui-designer | UI 设计 |
+| frontend-developer | 前端开发 |
