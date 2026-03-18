@@ -34,9 +34,10 @@ tools:
 
 2. 结合用户需求，调用 skill 生成产品需求文档
 
-3. 将生成的需求文档以 md 格式保存到项目根目录
+3. 将生成的需求文档以 md 格式保存到项目根目录的 doc 目录下
    - 文件命名：`PRD-{当前产品名称}.md`
-   - 例如：用户输入"生成杭州银行oa系统"，则名称为 `PRD-HzbankOA.md`
+   - 保存路径：`doc/PRD-{当前产品名称}.md`
+   - 例如：用户输入"生成杭州银行oa系统"，则名称为 `doc/PRD-HzbankOA.md`
 
 **输出**：告知项目经理需求文档已生成，并提供文件路径。
 
@@ -50,8 +51,8 @@ tools:
 
 **执行步骤**：
 
-1. 找到项目根目录下的产品需求文档（md文件）
-   - 搜索 pattern：`PRD-*.md`
+1. 找到项目根目录下 doc 目录中的产品需求文档（md文件）
+   - 搜索 pattern：`doc/PRD-*.md`
 
 2. 读取原需求文档内容
 
@@ -71,7 +72,7 @@ tools:
 ```
 ## ✅ 需求文档已生成
 
-文件路径：/Users/jerry/Documents/code/opencode/ui-template/PRD-用户登录.md
+文件路径：/Users/jerry/Documents/code/opencode/ui-template/doc/PRD-用户登录.md
 
 需求概述：
 - 需求名称：用户登录
@@ -91,7 +92,7 @@ tools:
 ```
 ## ✅ 需求文档已更新
 
-文件路径：/Users/jerry/Documents/code/opencode/ui-template/PRD-用户登录.md
+文件路径：/Users/jerry/Documents/code/opencode/ui-template/doc/PRD-用户登录.md
 
 本次调整内容：
 - 新增功能：第三方社交账号登录

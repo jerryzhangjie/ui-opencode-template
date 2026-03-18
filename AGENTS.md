@@ -155,7 +155,7 @@ src/
 |-------|------|----------|
 | project-manager | 项目经理，协调完整开发流程 | `@project-manager 创建登录页` |
 | product-manager | 需求分析，输出需求文档 | `@product-manager 分析需求` |
-| designer | 调用 ui-ux-pro-max 生成设计 | `@designer 生成设计文档` |
+| ui-designer | 调用 ui-ux-pro-max 生成设计 | `@ui-designer 生成设计文档` |
 | frontend-developer | 前端开发，响应走查/缺陷 | `@frontend-developer 开发页面` |
 
 ---

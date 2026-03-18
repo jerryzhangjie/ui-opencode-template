@@ -98,6 +98,13 @@ python3 .opencode/skills/ui-ux-pro-max/scripts/search.py "layout responsive form
 - 键盘导航
 - 屏幕阅读器支持
 
+### 第五步：保存设计文档
+
+将生成的设计文档以 md 格式保存到项目根目录的 doc 目录下：
+- 文件命名：`UI-{当前产品名称}.md`
+- 保存路径：`doc/UI-{当前产品名称}.md`
+- 例如：用户输入"生成杭州银行官网"，则名称为 `doc/UI-杭州银行官网.md`
+
 ## UI 走查流程
 
 当需要对新开发的页面进行 UI 走查时：

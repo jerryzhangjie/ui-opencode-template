@@ -9,12 +9,18 @@ const USER_KEY = 'hr_system_user'
  */
 export function login(username, password) {
   if (!username || !password) {
-    return { success: false, error: '请输入用户名和密码' }
+    return { success: false, error: '用户名和密码不能为空' }
   }
   
+  // Mock user data - admin/admin
   if (username === 'admin' && password === 'admin') {
-    localStorage.setItem(STORAGE_KEY, 'true')
-    localStorage.setItem(USER_KEY, JSON.stringify({ username }))
+    const token = 'mock_token_' + Date.now()
+    localStorage.setItem(STORAGE_KEY, token)
+    localStorage.setItem(USER_KEY, JSON.stringify({ 
+      username, 
+      name: '系统管理员',
+      avatar: 'A'
+    }))
     return { success: true }
   }
   
@@ -34,7 +40,7 @@ export function logout() {
  * @returns {boolean}
  */
 export function isAuthenticated() {
-  return localStorage.getItem(STORAGE_KEY) === 'true'
+  return !!localStorage.getItem(STORAGE_KEY)
 }
 
 /**

@@ -1,113 +1,95 @@
 <template>
   <div class="dashboard">
-    <!-- Main content -->
-    <main class="main-content">
-      <!-- Welcome banner -->
-      <div class="welcome-banner">
-        <div class="welcome-text">
-          <h2>欢迎回来，{{ username }}！</h2>
-          <p>今天是 {{ currentDate }}，您有 {{ pendingCount }} 项待办审批需要处理。</p>
-        </div>
-        <div class="welcome-actions">
-          <button class="primary-button" @click="goToApproval">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path fill-rule="evenodd" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" clip-rule="evenodd" />
-            </svg>
-            处理待办
-          </button>
-          <button class="secondary-button" @click="goToAttendance">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path fill-rule="evenodd" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" clip-rule="evenodd" />
-            </svg>
-            考勤打卡
-          </button>
-        </div>
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-left">
+        <h1>人力资源看板</h1>
+        <p>实时掌握企业人力资源状况</p>
       </div>
-      
-      <!-- Quick stats -->
-      <div class="quick-stats">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(37, 99, 235, 0.1);">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#2563EB">
-              <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clip-rule="evenodd" />
-              <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 15a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V15zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 18a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V18zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h3>{{ stats.documents }}</h3>
-            <p>文档总数</p>
-          </div>
+      <div class="header-right">
+        <span class="last-update">最后更新：{{ lastUpdateTime }}</span>
+        <button class="refresh-btn" @click="refreshData" :disabled="refreshing">
+          <svg :class="{ spinning: refreshing }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0112.548-3.364l1.903 1.903h-3.183a.75.75 0 100 1.5h4.992a.75.75 0 00.75-.75V4.356a.75.75 0 00-1.5 0v3.18l-1.9-1.9A9 9 0 003.306 9.67a.75.75 0 101.45.388zm15.408 3.352a.75.75 0 00-.919.53 7.5 7.5 0 01-12.548 3.364l-1.902-1.903h3.183a.75.75 0 000-1.5H2.984a.75.75 0 00-.75.75v4.992a.75.75 0 001.5 0v-3.18l1.9 1.9a9 9 0 0015.059-4.035.75.75 0 00-.53-.918z" clip-rule="evenodd" />
+          </svg>
+          <span>{{ refreshing ? '刷新中...' : '刷新数据' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card" v-for="(kpi, index) in kpiData" :key="kpi.label" :style="{ animationDelay: `${index * 100}ms` }">
+        <div class="kpi-icon" :style="{ background: kpi.iconBg }">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" :style="{ color: kpi.iconColor }">
+            <path :d="kpi.icon" />
+          </svg>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(249, 115, 22, 0.1);">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#F97316">
-              <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clip-rule="evenodd" />
-              <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 15a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V15zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 18a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V18zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+        <div class="kpi-content">
+          <span class="kpi-label">{{ kpi.label }}</span>
+          <span class="kpi-value" :style="{ color: kpi.valueColor }">{{ kpi.value }}</span>
+          <div class="kpi-trend" :class="kpi.trendType">
+            <svg v-if="kpi.trendType === 'up'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
             </svg>
-          </div>
-          <div class="stat-info">
-            <h3>{{ stats.pending }}</h3>
-            <p>待办审批</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1);">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#10B981">
-              <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clip-rule="evenodd" />
-              <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 15a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V15zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 18a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V18zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+            <svg v-else-if="kpi.trendType === 'down'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M12 20.25a.75.75 0 01.75-.75h6.75a.75.75 0 010 1.5H12.75v-6.75a.75.75 0 011.5 0v6.75a.75.75 0 01-.75.75H12a.75.75 0 01-.75-.75v-6.75a.75.75 0 00-1.5 0v6.75h-.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
             </svg>
-          </div>
-          <div class="stat-info">
-            <h3>{{ stats.meetings }}</h3>
-            <p>今日会议</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1);">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#8B5CF6">
-              <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clip-rule="evenodd" />
-              <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 15a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V15zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 18a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V18zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h3>{{ stats.announcements }}</h3>
-            <p>通知公告</p>
+            <span>{{ kpi.trend }}</span>
           </div>
         </div>
       </div>
-      
-      <!-- Main feature cards -->
-      <div class="feature-cards">
-        <h3 class="section-title">常用功能</h3>
-        <div class="cards-grid">
-            <div 
-              v-for="card in featureCards"
-              :key="card.id"
-              class="feature-card glass-card"
-              tabindex="0"
-              @click="goToFeature(card.route)"
-              @keyup.enter="goToFeature(card.route)"
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+      <!-- Department Distribution - Pie Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>部门人员分布</h3>
+        </div>
+        <div class="chart-body" ref="deptChart"></div>
+      </div>
+
+      <!-- Personnel Flow Trend - Line Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>人员流动趋势</h3>
+          <div class="time-selector">
+            <button 
+              v-for="period in timePeriods" 
+              :key="period.value"
+              :class="{ active: selectedPeriod === period.value }"
+              @click="changePeriod(period.value)"
             >
-            <div class="card-icon" :style="{ background: card.iconBg }">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                <path :d="card.icon" />
-              </svg>
-            </div>
-            <div class="card-content">
-              <h4>{{ card.title }}</h4>
-              <div v-if="card.type === 'count'" class="card-count">{{ card.count }}</div>
-              <div v-else-if="card.type === 'success'" class="card-status status-success">{{ card.status }}</div>
-              <div v-else-if="card.type === 'info'" class="card-status status-info">{{ card.status }}</div>
-              <div class="card-hint">点击查看详情</div>
-            </div>
+              {{ period.label }}
+            </button>
           </div>
         </div>
+        <div class="chart-body" ref="flowChart"></div>
       </div>
-    </main>
+
+      <!-- Position Distribution - Donut Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>岗位类型分布</h3>
+        </div>
+        <div class="chart-body" ref="positionChart"></div>
+      </div>
+
+      <!-- Age Structure - Bar Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>年龄结构分析</h3>
+        </div>
+        <div class="chart-body" ref="ageChart"></div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import * as echarts from 'echarts'
 import { getCurrentUser } from '@/utils/auth'
 
 export default {
@@ -115,474 +97,672 @@ export default {
   data() {
     return {
       username: '',
-      currentDate: '',
-      pendingCount: 5,
-      stats: {
-        documents: 128,
-        pending: 5,
-        meetings: 3,
-        announcements: 12
-      },
-      featureCards: [
+      lastUpdateTime: '',
+      refreshing: false,
+      selectedPeriod: 'month',
+      timePeriods: [
+        { label: '近一周', value: 'week' },
+        { label: '近一月', value: 'month' },
+        { label: '近三月', value: 'quarter' },
+        { label: '近一年', value: 'year' }
+      ],
+      kpiData: [
         {
-          id: 1,
-          title: '待办审批',
-          icon: 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-          iconBg: 'rgba(37, 99, 235, 0.1)',
-          route: '/approval',
-          count: '3条待处理',
-          type: 'count'
+          label: '员工总数',
+          value: '1,286',
+          trend: '较上季度 +3.2%',
+          trendType: 'up',
+          icon: 'M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z',
+          iconBg: 'rgba(30, 58, 138, 0.1)',
+          iconColor: '#1E3A8A',
+          valueColor: '#0F172A'
         },
         {
-          id: 2,
-          title: '通知公告',
-          icon: 'M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069c-.18-.444-.388-.876-.622-1.294a19.04 19.04 0 00-1.488 1.338 19.145 19.145 0 00-1.415-1.414c.37-.464.8-.887 1.278-1.258a18.99 18.99 0 00-1.294-.622m13.53 4.894a20.935 20.935 0 001.46-4.282c.267-.578-.038-1.258-.59-1.465a20.902 20.902 0 01-4.282-1.46c.402-.89.733-1.82.984-2.783m0 0a18.97 18.97 0 01.09-2.09c.07-.688.09-1.386.09-2.09h-9a4.5 4.5 0 004.5 4.5c.99 0 1.934-.2 2.784-.56M14.25 9.75a4.5 4.5 0 004.5 4.5c.99 0 1.934-.2 2.784-.56.07-.687.09-1.386.09-2.09h-9a4.5 4.5 0 004.5 4.5z',
-          iconBg: 'rgba(249, 115, 22, 0.1)',
-          route: '/announcement',
-          count: '5条未读',
-          type: 'count'
+          label: '本月入职',
+          value: '42',
+          trend: '较上月 +12',
+          trendType: 'up',
+          icon: 'M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z',
+          iconBg: 'rgba(22, 163, 74, 0.1)',
+          iconColor: '#16A34A',
+          valueColor: '#16A34A'
         },
         {
-          id: 3,
-          title: '考勤打卡',
-          icon: 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z',
-          iconBg: 'rgba(16, 185, 129, 0.1)',
-          route: '/attendance',
-          status: '已签到',
-          type: 'success'
+          label: '本月离职',
+          value: '18',
+          trend: '较上月 -5',
+          trendType: 'down',
+          icon: 'M12 20.25a.75.75 0 01.75-.75h6.75a.75.75 0 010 1.5H12.75v-6.75a.75.75 0 011.5 0v6.75a.75.75 0 01-.75.75H12a.75.75 0 01-.75-.75v-6.75a.75.75 0 00-1.5 0v6.75h-.75a.75.75 0 01-.75-.75z',
+          iconBg: 'rgba(220, 38, 38, 0.1)',
+          iconColor: '#DC2626',
+          valueColor: '#DC2626'
         },
         {
-          id: 4,
-          title: '会议管理',
-          icon: 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z',
-          iconBg: 'rgba(139, 92, 246, 0.1)',
-          route: '/meeting',
-          count: '2个会议',
-          type: 'count'
-        },
-        {
-          id: 5,
-          title: '文档管理',
-          icon: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z',
-          iconBg: 'rgba(236, 72, 153, 0.1)',
-          route: '/document',
-          count: '12份文档',
-          type: 'count'
-        },
-        {
-          id: 6,
-          title: '个人中心',
-          icon: 'M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z',
-          iconBg: 'rgba(59, 130, 246, 0.1)',
-          route: '/profile',
-          status: '查看资料',
-          type: 'info'
+          label: '在编率',
+          value: '96.8%',
+          trend: '目标 ≥95%',
+          trendType: 'up',
+          icon: 'M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z',
+          iconBg: 'rgba(202, 138, 4, 0.1)',
+          iconColor: '#CA8A04',
+          valueColor: '#1E3A8A'
         }
+      ],
+      // Chart instances
+      deptChart: null,
+      flowChart: null,
+      positionChart: null,
+      ageChart: null,
+      // Chart data
+      deptData: [
+        { name: '总行营业部', value: 286 },
+        { name: '科技支行', value: 198 },
+        { name: '城西支行', value: 165 },
+        { name: '城东支行', value: 152 },
+        { name: '滨汇支行', value: 138 }
+      ],
+      flowData: {
+        week: { hired: [5, 8, 6, 12, 7, 9, 4], resigned: [2, 3, 1, 4, 2, 3, 1] },
+        month: { hired: [12, 18, 15, 22, 16, 20, 14], resigned: [8, 6, 10, 5, 8, 7, 6] },
+        quarter: { hired: [45, 52, 48], resigned: [28, 32, 25] },
+        year: { hired: [186, 210, 195, 168], resigned: [120, 98, 110, 85] }
+      },
+      positionData: [
+        { name: '柜员', value: 386 },
+        { name: '客户经理', value: 285 },
+        { name: '管理人员', value: 156 },
+        { name: '技术人员', value: 198 },
+        { name: '其他', value: 261 }
+      ],
+      ageData: [
+        { name: '20岁以下', value: 28 },
+        { name: '20-30岁', value: 386 },
+        { name: '30-40岁', value: 425 },
+        { name: '40-50岁', value: 298 },
+        { name: '50岁以上', value: 149 }
       ]
     }
   },
   mounted() {
     const user = getCurrentUser()
-    this.username = user ? user.username : 'admin'
-    this.formatCurrentDate()
+    this.username = user ? user.name : '管理员'
+    this.updateTime()
+    this.initCharts()
+    this.startAutoRefresh()
+  },
+  beforeDestroy() {
+    this.stopAutoRefresh()
+    this.disposeCharts()
   },
   methods: {
-    formatCurrentDate() {
+    updateTime() {
       const now = new Date()
-      const year = now.getFullYear()
-      const month = now.getMonth() + 1
-      const day = now.getDate()
-      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
-      const weekday = weekdays[now.getDay()]
-      this.currentDate = `${year}年${month}月${day}日 ${weekday}`
+      this.lastUpdateTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
     },
-    goToApproval() {
-      this.$router.push('/approval')
+    startAutoRefresh() {
+      this.timer = setInterval(() => {
+        this.updateTime()
+      }, 1000)
     },
-    goToAttendance() {
-      this.$router.push('/attendance')
+    stopAutoRefresh() {
+      if (this.timer) {
+        clearInterval(this.timer)
+      }
     },
-    goToFeature(route) {
-      this.$router.push(route)
+    refreshData() {
+      if (this.refreshing) return
+      this.refreshing = true
+      setTimeout(() => {
+        this.refreshing = false
+        this.updateTime()
+      }, 1500)
+    },
+    changePeriod(period) {
+      this.selectedPeriod = period
+      this.updateFlowChart()
+    },
+    initCharts() {
+      this.initDeptChart()
+      this.initFlowChart()
+      this.initPositionChart()
+      this.initAgeChart()
+    },
+    disposeCharts() {
+      this.deptChart?.dispose()
+      this.flowChart?.dispose()
+      this.positionChart?.dispose()
+      this.ageChart?.dispose()
+    },
+    
+    // Department Pie Chart
+    initDeptChart() {
+      this.deptChart = echarts.init(this.$refs.deptChart)
+      const option = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c}人 ({d}%)',
+          backgroundColor: '#FFFFFF',
+          borderColor: '#E2E8F0',
+          borderWidth: 1,
+          textStyle: { color: '#0F172A' }
+        },
+        legend: {
+          orient: 'vertical',
+          right: 10,
+          top: 'center',
+          textStyle: { color: '#64748B', fontSize: 12 }
+        },
+        series: [{
+          name: '部门人数',
+          type: 'pie',
+          radius: ['45%', '70%'],
+          center: ['35%', '50%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 6,
+            borderColor: '#FFFFFF',
+            borderWidth: 2
+          },
+          label: { show: false },
+          emphasis: {
+            label: { show: false },
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.3)'
+            }
+          },
+          labelLine: { show: false },
+          data: this.deptData,
+          color: ['#1E3A8A', '#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE']
+        }]
+      }
+      this.deptChart.setOption(option)
+    },
+    
+    // Flow Line Chart
+    initFlowChart() {
+      this.flowChart = echarts.init(this.$refs.flowChart)
+      this.updateFlowChart()
+    },
+    updateFlowChart() {
+      const data = this.flowData[this.selectedPeriod]
+      const xLabels = this.selectedPeriod === 'week' 
+        ? ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        : this.selectedPeriod === 'month'
+        ? ['第1周', '第2周', '第3周', '第4周', '第5周', '第6周', '第7周']
+        : this.selectedPeriod === 'quarter'
+        ? ['1月', '2月', '3月']
+        : ['Q1', 'Q2', 'Q3', 'Q4']
+      
+      const option = {
+        tooltip: {
+          trigger: 'axis',
+          backgroundColor: '#FFFFFF',
+          borderColor: '#E2E8F0',
+          borderWidth: 1,
+          textStyle: { color: '#0F172A' }
+        },
+        legend: {
+          data: ['入职', '离职'],
+          top: 0,
+          textStyle: { color: '#64748B', fontSize: 12 }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          top: '20%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: xLabels,
+          axisLine: { lineStyle: { color: '#E2E8F0' } },
+          axisLabel: { color: '#64748B', fontSize: 12 }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { show: false },
+          splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
+          axisLabel: { color: '#64748B', fontSize: 12 }
+        },
+        series: [
+          {
+            name: '入职',
+            type: 'line',
+            data: data.hired,
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 6,
+            lineStyle: { color: '#16A34A', width: 3 },
+            itemStyle: { color: '#16A34A' },
+            areaStyle: {
+              color: {
+                type: 'linear',
+                x: 0, y: 0, x2: 0, y2: 1,
+                colorStops: [
+                  { offset: 0, color: 'rgba(22, 163, 74, 0.3)' },
+                  { offset: 1, color: 'rgba(22, 163, 74, 0.05)' }
+                ]
+              }
+            }
+          },
+          {
+            name: '离职',
+            type: 'line',
+            data: data.resigned,
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 6,
+            lineStyle: { color: '#DC2626', width: 3 },
+            itemStyle: { color: '#DC2626' },
+            areaStyle: {
+              color: {
+                type: 'linear',
+                x: 0, y: 0, x2: 0, y2: 1,
+                colorStops: [
+                  { offset: 0, color: 'rgba(220, 38, 38, 0.3)' },
+                  { offset: 1, color: 'rgba(220, 38, 38, 0.05)' }
+                ]
+              }
+            }
+          }
+        ]
+      }
+      this.flowChart.setOption(option)
+    },
+    
+    // Position Donut Chart
+    initPositionChart() {
+      this.positionChart = echarts.init(this.$refs.positionChart)
+      const option = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c}人 ({d}%)',
+          backgroundColor: '#FFFFFF',
+          borderColor: '#E2E8F0',
+          borderWidth: 1,
+          textStyle: { color: '#0F172A' }
+        },
+        legend: {
+          orient: 'vertical',
+          right: 10,
+          top: 'center',
+          textStyle: { color: '#64748B', fontSize: 12 }
+        },
+        series: [{
+          name: '岗位类型',
+          type: 'pie',
+          radius: ['50%', '75%'],
+          center: ['35%', '50%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 6,
+            borderColor: '#FFFFFF',
+            borderWidth: 2
+          },
+          label: { show: false },
+          data: this.positionData,
+          color: ['#CA8A04', '#EAB308', '#FCD34D', '#FDE68A', '#FEF3C7']
+        }]
+      }
+      this.positionChart.setOption(option)
+    },
+    
+    // Age Bar Chart
+    initAgeChart() {
+      this.ageChart = echarts.init(this.$refs.ageChart)
+      const option = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          backgroundColor: '#FFFFFF',
+          borderColor: '#E2E8F0',
+          borderWidth: 1,
+          textStyle: { color: '#0F172A' }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          top: '10%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'value',
+          axisLine: { show: false },
+          splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
+          axisLabel: { color: '#64748B', fontSize: 12 }
+        },
+        yAxis: {
+          type: 'category',
+          data: this.ageData.map(item => item.name),
+          axisLine: { lineStyle: { color: '#E2E8F0' } },
+          axisLabel: { color: '#64748B', fontSize: 12 }
+        },
+        series: [{
+          name: '人数',
+          type: 'bar',
+          data: this.ageData.map(item => item.value),
+          barWidth: '50%',
+          itemStyle: {
+            borderRadius: [0, 4, 4, 0],
+            color: {
+              type: 'linear',
+              x: 0, y: 0, x2: 1, y2: 0,
+              colorStops: [
+                { offset: 0, color: '#0F172A' },
+                { offset: 1, color: '#475569' }
+              ]
+            }
+          },
+          label: {
+            show: true,
+            position: 'right',
+            color: '#64748B',
+            fontSize: 12
+          }
+        }]
+      }
+      this.ageChart.setOption(option)
     }
   }
 }
 </script>
 
 <style scoped>
-/* Import Inter font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
 
 .dashboard {
-  min-height: 100vh;
+  min-height: calc(100vh - 80px);
   background: #F8FAFC;
-  font-family: 'Inter', sans-serif;
-  color: #1E293B;
+  font-family: 'IBM Plex Sans', sans-serif;
+  padding: 24px 32px;
 }
 
-.main-content {
-  padding: 32px;
-  transition: all 0.3s ease;
-}
-
-.welcome-banner {
-  background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
-  border-radius: 24px;
-  padding: 40px 48px;
-  color: white;
-  margin-bottom: 32px;
+/* Page Header */
+.page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  box-shadow: 
-    0 20px 40px rgba(37, 99, 235, 0.2),
-    0 8px 16px rgba(37, 99, 235, 0.1);
+  align-items: flex-start;
+  margin-bottom: 32px;
 }
 
-.welcome-text h2 {
-  font-size: 32px;
+.header-left h1 {
+  font-size: 28px;
   font-weight: 600;
-  margin-bottom: 12px;
-  letter-spacing: -0.02em;
+  color: #0F172A;
+  margin-bottom: 4px;
 }
 
-.welcome-text p {
-  font-size: 16px;
-  opacity: 0.9;
-  font-weight: 400;
+.header-left p {
+  font-size: 14px;
+  color: #64748B;
 }
 
-.welcome-actions {
+.header-right {
   display: flex;
+  align-items: center;
   gap: 16px;
 }
 
-.primary-button,
-.secondary-button {
+.last-update {
+  font-size: 13px;
+  color: #64748B;
+}
+
+.refresh-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 14px 24px;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 600;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #0F172A;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: none;
-  outline: none;
 }
 
-.primary-button {
-  background: white;
-  color: #2563EB;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.refresh-btn:hover:not(:disabled) {
+  border-color: #1E3A8A;
+  color: #1E3A8A;
 }
 
-.primary-button:hover {
-  background: rgba(255, 255, 255, 0.95);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.secondary-button {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+.refresh-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
-.secondary-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
+.refresh-btn svg.spinning {
+  animation: spin 1s linear infinite;
 }
 
-.primary-button svg,
-.secondary-button svg {
-  width: 20px;
-  height: 20px;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.quick-stats {
+/* KPI Grid */
+.kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 }
 
-.stat-card {
-  background: white;
-  border-radius: 16px;
+.kpi-card {
+  background: #FFFFFF;
+  border-radius: 12px;
   padding: 24px;
   display: flex;
-  align-items: center;
-  gap: 20px;
-  box-shadow: 
-    0 8px 16px rgba(0, 0, 0, 0.04),
-    0 2px 4px rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  transition: all 0.3s ease;
-  cursor: pointer;
+  align-items: flex-start;
+  gap: 16px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  animation: slideUp 0.5s ease-out forwards;
+  opacity: 0;
+  transition: all 0.2s ease;
 }
 
-.stat-card:hover {
+.kpi-card:hover {
   transform: translateY(-4px);
-  box-shadow: 
-    0 16px 32px rgba(0, 0, 0, 0.08),
-    0 4px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.stat-icon {
-  width: 56px;
-  height: 56px;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kpi-icon {
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.stat-icon svg {
-  width: 28px;
-  height: 28px;
+.kpi-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
-.stat-info h3 {
-  font-size: 32px;
-  font-weight: 600;
-  color: #1E293B;
-  margin-bottom: 4px;
-  line-height: 1;
-}
-
-.stat-info p {
-  font-size: 14px;
-  color: #64748B;
-  font-weight: 500;
-}
-
-.section-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1E293B;
-  margin-bottom: 24px;
-  letter-spacing: -0.02em;
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.08),
-    0 8px 16px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  transition: all 0.3s ease;
-}
-
-.glass-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 
-    0 24px 48px rgba(0, 0, 0, 0.12),
-    0 12px 24px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-
-.glass-card:focus {
-  outline: 2px solid #3B82F6;
-  outline-offset: 2px;
-}
-
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-bottom: 40px;
-}
-
-.feature-card {
-  /* glass styles inherited from .glass-card */
-  padding: 32px;
-  cursor: pointer;
+.kpi-content {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  text-align: center;
 }
 
+.kpi-label {
+  font-size: 14px;
+  color: #64748B;
+  margin-bottom: 8px;
+}
 
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
 
-.card-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
+.kpi-trend {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #2563EB;
+  gap: 4px;
+  font-size: 12px;
 }
 
-.card-icon svg {
-  width: 32px;
-  height: 32px;
-  color: currentColor;
+.kpi-trend.up {
+  color: #16A34A;
 }
 
-.card-content h4 {
-  font-size: 20px;
+.kpi-trend.down {
+  color: #DC2626;
+}
+
+.kpi-trend svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Charts Grid */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.chart-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.chart-header h3 {
+  font-size: 16px;
   font-weight: 600;
-  color: #1E293B;
-  margin-bottom: 8px;
-  letter-spacing: -0.02em;
+  color: #0F172A;
 }
 
-.card-content p {
-  font-size: 14px;
-  color: #64748B;
-  line-height: 1.5;
-}
-
-.card-count,
-.card-status {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 12px;
-}
-
-.card-count {
-  color: #2563EB;
-}
-
-.status-success {
-  color: #10B981;
-}
-
-.status-info {
-  color: #3B82F6;
-}
-
-.card-hint {
-  font-size: 14px;
-  color: #64748B;
-  margin-top: 8px;
-}
-
-.card-action {
-  margin-top: auto;
-}
-
-.card-button {
-  padding: 8px 20px;
-  background: rgba(37, 99, 235, 0.1);
-  color: #2563EB;
-  border: none;
+.time-selector {
+  display: flex;
+  gap: 4px;
+  background: #F1F5F9;
+  padding: 4px;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
+}
+
+.time-selector button {
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #64748B;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.card-button:hover {
-  background: rgba(37, 99, 235, 0.2);
+.time-selector button:hover {
+  color: #0F172A;
 }
 
-/* Responsive adjustments */
+.time-selector button.active {
+  background: #FFFFFF;
+  color: #0F172A;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.chart-body {
+  height: 320px;
+  padding: 16px;
+}
+
+/* Responsive */
+@media (max-width: 1280px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 1024px) {
-  .main-content {
-    padding: 24px;
+  .dashboard {
+    padding: 20px;
   }
   
-  .quick-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .welcome-banner {
-    padding: 32px;
-  }
-  
-  .welcome-text h2 {
-    font-size: 28px;
+  .charts-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .main-content {
-    padding: 20px;
-  }
-  
-  .welcome-banner {
+  .page-header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 24px;
-    padding: 24px;
+    gap: 16px;
   }
   
-  .welcome-actions {
+  .header-right {
     width: 100%;
-    flex-direction: column;
+    justify-content: space-between;
   }
   
-  .quick-stats {
+  .kpi-grid {
     grid-template-columns: 1fr;
   }
   
-  .cards-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .stat-card {
+  .kpi-card {
     padding: 20px;
   }
   
-  .feature-card {
-    padding: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .main-content {
-    padding: 16px;
-  }
-  
-  .welcome-text h2 {
+  .kpi-value {
     font-size: 24px;
   }
   
-  .stat-info h3 {
-    font-size: 28px;
+  .chart-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .chart-body {
+    height: 280px;
   }
 }
 
-/* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
-  .dashboard,
-  .main-content,
-  .stat-card,
-  .feature-card,
-  .primary-button,
-  .secondary-button,
-  .card-button {
+  .kpi-card,
+  .refresh-btn svg.spinning {
+    animation: none;
     transition: none;
   }
   
-  .stat-card:hover,
-  .feature-card:hover {
+  .kpi-card:hover {
     transform: none;
   }
-}
-
-/* Focus styles for keyboard navigation */
-.feature-card:focus,
-.stat-card:focus,
-.primary-button:focus,
-.secondary-button:focus,
-.card-button:focus {
-  outline: 2px solid #3B82F6;
-  outline-offset: 2px;
 }
 </style>

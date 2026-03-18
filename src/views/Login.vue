@@ -1,134 +1,151 @@
 <template>
   <div class="login-page">
     <div class="login-container">
-      <div class="login-card">
-        <div class="header">
-          <div class="logo">
+      <!-- Left Panel - Bank Branding -->
+      <div class="left-panel">
+        <div class="logo-area">
+          <div class="logo-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12 6.75a5.25 5.25 0 110 10.5 5.25 5.25 0 010-10.5zm0 1.5a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5z" clip-rule="evenodd" />
+              <path d="M11.5 1.5L1.5 7l2 13.5L11.5 24l8-9.5-2-13.5L11.5 1.5zM11.5 3.5l6.5 4.5-1.5 10-5 6-5-6-1.5-10 6.5-4.5z"/>
+              <path d="M11.5 8.5l-3.5 2.5 1 6.5 2.5 3 2.5-3 1-6.5-3.5-2.5z"/>
             </svg>
           </div>
-          <h1>登录</h1>
-          <p class="subtitle">欢迎回来，请登录您的账号</p>
+          <div class="system-name">
+            <span class="bank-name">杭州银行</span>
+            <span class="module-name">人力资源管理系统</span>
+          </div>
         </div>
-
-        <form @submit.prevent="handleLogin" class="login-form">
-          <div class="form-group">
-            <label for="email">邮箱</label>
-            <div class="input-wrapper">
-              <input
-                id="email"
-                v-model="email"
-                type="email"
-                placeholder="请输入邮箱"
-                autocomplete="email"
-                :class="{ 'has-error': errors.email }"
-                @blur="validateEmail"
-              />
-              <button
-                v-if="email"
-                type="button"
-                class="clear-btn"
-                @click="email = ''"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            </div>
-            <span v-if="errors.email" class="error-text">{{ errors.email }}</span>
-          </div>
-
-          <div class="form-group">
-            <label for="password">密码</label>
-            <div class="input-wrapper">
-              <input
-                id="password"
-                v-model="password"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="请输入密码"
-                autocomplete="current-password"
-                :class="{ 'has-error': errors.password }"
-                @blur="validatePassword"
-              />
-              <button
-                type="button"
-                class="toggle-btn"
-                @click="showPassword = !showPassword"
-              >
-                <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                  <path fill-rule="evenodd" d="M3.72 3.72a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            </div>
-            <span v-if="errors.password" class="error-text">{{ errors.password }}</span>
-          </div>
-
-          <div class="form-options">
-            <label class="checkbox-label">
-              <input v-model="rememberMe" type="checkbox" class="checkbox" />
-              <span class="checkbox-custom"></span>
-              <span>记住我</span>
-            </label>
-            <a href="#" class="forgot-link" @click.prevent="handleForgotPassword">忘记密码？</a>
-          </div>
-
-          <button type="submit" class="login-btn" :disabled="loading">
-            <span v-if="loading" class="spinner"></span>
-            <span v-else>登录</span>
-          </button>
-
-          <div v-if="error" class="error-message">
-            {{ error }}
-          </div>
-        </form>
-
-        <div class="divider">
-          <span>或</span>
+        <div class="welcome-text">
+          <h1>欢迎使用</h1>
+          <p>专业的银行人力资源管理平台</p>
+          <p class="sub-text">数据驱动决策，赋能组织发展</p>
         </div>
+        <div class="decoration">
+          <div class="circle circle-1"></div>
+          <div class="circle circle-2"></div>
+          <div class="circle circle-3"></div>
+        </div>
+      </div>
 
-        <div class="third-party-section">
-          <button class="third-party-btn wechat" @click="handleWechatLogin">
+      <!-- Right Panel - Login Form -->
+      <div class="right-panel">
+        <div class="login-card">
+          <div class="card-header">
+            <h2>用户登录</h2>
+            <p>请输入账号密码登录系统</p>
+          </div>
+
+          <form @submit.prevent="handleLogin" class="login-form">
+            <div class="form-group">
+              <label for="username">用户名</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+                </svg>
+                <input
+                  id="username"
+                  v-model="username"
+                  type="text"
+                  placeholder="请输入用户名"
+                  autocomplete="username"
+                  :class="{ 'has-error': errors.username }"
+                  @blur="validateUsername"
+                />
+                <button
+                  v-if="username"
+                  type="button"
+                  class="clear-btn"
+                  @click="username = ''"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+              <span v-if="errors.username" class="error-text">{{ errors.username }}</span>
+            </div>
+
+            <div class="form-group">
+              <label for="password">密码</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd" />
+                </svg>
+                <input
+                  id="password"
+                  v-model="password"
+                  :type="showPassword ? 'text' : 'password'"
+                  placeholder="请输入密码"
+                  autocomplete="current-password"
+                  :class="{ 'has-error': errors.password }"
+                  @blur="validatePassword"
+                />
+                <button
+                  type="button"
+                  class="toggle-btn"
+                  @click="showPassword = !showPassword"
+                >
+                  <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                  </svg>
+                  <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3.72 3.72a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+              <span v-if="errors.password" class="error-text">{{ errors.password }}</span>
+            </div>
+
+            <div class="form-options">
+              <label class="checkbox-label">
+                <input v-model="rememberMe" type="checkbox" class="checkbox" />
+                <span class="checkbox-custom"></span>
+                <span>记住密码</span>
+              </label>
+              <a href="#" class="forgot-link" @click.prevent="handleForgotPassword">忘记密码？</a>
+            </div>
+
+            <button type="submit" class="login-btn" :disabled="loading">
+              <span v-if="loading" class="spinner"></span>
+              <span v-else>登 录</span>
+            </button>
+
+            <div v-if="error" class="error-message">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+              </svg>
+              {{ error }}
+            </div>
+          </form>
+
+          <div class="security-tips">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
+              <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 00-1.032 0 11.586 11.586 0 007.626 2.277.75.75 0 001.38-.534 13.134 13.134 0 00-5.724-2.697 11.109 11.109 0 00-3.52 1.654.75.75 0 00.572 1.282zm3.137 3.325a.75.75 0 00-1.035.135 12.518 12.518 0 01-5.388 1.874.75.75 0 10-.502 1.373c1.62.856 3.428 1.573 5.334 2.085a.75.75 0 00.502-1.373 13.134 13.134 0 00-2.04-2.969zm3.503 3.39a.75.75 0 00-1.072.224A11.11 11.11 0 0112 21a11.11 11.11 0 01-5.939-2.166.75.75 0 00-.828.224.75.75 0 00.216 1.071c1.213.768 2.631 1.404 4.153 1.84a.75.75 0 00.828-.224A11.109 11.109 0 0012 22.5c-.596 0-1.177-.107-1.723-.302a.75.75 0 00-.216 1.07c1.14.7 2.45 1.257 3.86 1.622a.75.75 0 001.038-.673 13.134 13.134 0 01-2.92-3.068z" clip-rule="evenodd" />
+              <path d="M11.354 1.646a.5.5 0 0 1 .708 0l13 13a.5.5 0 0 1-.708.708L11.5 2.707V14.5a.5.5 0 0 1-1 0V2.707L1.354 15.354a.5.5 0 0 1-.708-.708l13-13z" />
             </svg>
-            <span>微信登录</span>
-          </button>
-          <button class="third-party-btn google" @click="handleGoogleLogin">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            <span>Google 登录</span>
-          </button>
+            <span>系统安全登录，保障您的信息安全</span>
+          </div>
         </div>
-
-        <p class="register-hint">
-          没有账号？<a href="#" @click.prevent="handleRegister">立即注册</a>
-        </p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { login } from '@/utils/auth'
+
 export default {
   name: 'Login',
   data() {
     return {
-      email: '',
+      username: '',
       password: '',
       rememberMe: false,
       showPassword: false,
       loading: false,
       error: '',
       errors: {
-        email: '',
+        username: '',
         password: ''
       }
     }
@@ -137,17 +154,12 @@ export default {
     this.redirect = this.$route?.query?.redirect || ''
   },
   methods: {
-    validateEmail() {
-      if (!this.email) {
-        this.errors.email = '请输入邮箱'
+    validateUsername() {
+      if (!this.username) {
+        this.errors.username = '请输入用户名'
         return false
       }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!emailRegex.test(this.email)) {
-        this.errors.email = '请输入正确的邮箱格式'
-        return false
-      }
-      this.errors.email = ''
+      this.errors.username = ''
       return true
     },
     validatePassword() {
@@ -155,17 +167,13 @@ export default {
         this.errors.password = '请输入密码'
         return false
       }
-      if (this.password.length < 6) {
-        this.errors.password = '密码至少6位'
-        return false
-      }
       this.errors.password = ''
       return true
     },
     validateForm() {
-      const isEmailValid = this.validateEmail()
+      const isUsernameValid = this.validateUsername()
       const isPasswordValid = this.validatePassword()
-      return isEmailValid && isPasswordValid
+      return isUsernameValid && isPasswordValid
     },
     async handleLogin() {
       this.error = ''
@@ -177,109 +185,201 @@ export default {
       this.loading = true
 
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 800))
         
-        const mockUsers = {
-          'test@example.com': { password: '123456', name: 'Test User' },
-          'admin@example.com': { password: 'admin123', name: 'Admin' }
-        }
-
-        const user = mockUsers[this.email]
+        const result = login(this.username, this.password)
+        console.log('Login result:', result)
         
-        if (user && user.password === this.password) {
-          const token = btoa(JSON.stringify({ email: this.email, name: user.name }))
-          if (this.rememberMe) {
-            localStorage.setItem('auth_token', token)
-          } else {
-            sessionStorage.setItem('auth_token', token)
-          }
-          
-          this.$router.push(this.redirect || '/home')
+        if (result && result.success) {
+          this.$router.push('/dashboard')
         } else {
-          this.error = '邮箱或密码错误'
+          this.error = result?.error || '用户名或密码错误'
+          this.password = ''
         }
       } catch (err) {
+        console.error('Login error:', err)
         this.error = '登录失败，请稍后重试'
       } finally {
         this.loading = false
       }
     },
-    handleWechatLogin() {
-      this.error = '微信登录暂未开放'
-    },
-    handleGoogleLogin() {
-      this.error = 'Google 登录暂未开放'
-    },
     handleForgotPassword() {
-      this.error = '忘记密码功能暂未开放'
-    },
-    handleRegister() {
-      this.error = '注册功能暂未开放'
+      this.error = '请联系系统管理员重置密码'
     }
   }
 }
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
 
 .login-page {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #ECFDF5;
-  font-family: 'Nunito Sans', sans-serif;
-  padding: 20px;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 
 .login-container {
-  width: 100%;
-  max-width: 400px;
+  min-height: 100vh;
+  display: flex;
+  background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #1E40AF 100%);
+}
+
+/* Left Panel */
+.left-panel {
+  flex: 0 0 55%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 48px;
+  position: relative;
+  z-index: 1;
+}
+
+.logo-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #CA8A04 0%, #EAB308 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(202, 138, 4, 0.4);
+}
+
+.logo-icon svg {
+  width: 48px;
+  height: 48px;
+  color: white;
+}
+
+.system-name {
+  display: flex;
+  flex-direction: column;
+}
+
+.bank-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 2px;
+}
+
+.module-name {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
+}
+
+.welcome-text {
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-text h1 {
+  font-size: 48px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.welcome-text p {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 8px;
+}
+
+.welcome-text .sub-text {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Decoration circles */
+.decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.1;
+}
+
+.circle-1 {
+  width: 400px;
+  height: 400px;
+  background: #CA8A04;
+  top: -100px;
+  right: -100px;
+}
+
+.circle-2 {
+  width: 300px;
+  height: 300px;
+  background: #1E3A8A;
+  bottom: -50px;
+  left: 20%;
+}
+
+.circle-3 {
+  width: 200px;
+  height: 200px;
+  background: #3B82F6;
+  bottom: 10%;
+  right: 10%;
+}
+
+/* Right Panel */
+.right-panel {
+  flex: 0 0 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
 }
 
 .login-card {
+  width: 100%;
+  max-width: 420px;
   background: #FFFFFF;
   border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 48px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
-.header {
+.card-header {
   text-align: center;
   margin-bottom: 32px;
 }
 
-.logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, #059669, #10B981);
-  border-radius: 12px;
-  margin-bottom: 16px;
-}
-
-.logo svg {
-  width: 28px;
-  height: 28px;
-  color: white;
-}
-
-h1 {
-  font-family: 'Rubik', sans-serif;
+.card-header h2 {
   font-size: 24px;
   font-weight: 600;
-  color: #1E293B;
+  color: #0F172A;
   margin-bottom: 8px;
 }
 
-.subtitle {
+.card-header p {
   font-size: 14px;
   color: #64748B;
 }
 
+/* Form */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -295,21 +395,32 @@ h1 {
 .form-group label {
   font-size: 14px;
   font-weight: 500;
-  color: #1E293B;
+  color: #0F172A;
 }
 
 .input-wrapper {
   position: relative;
 }
 
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: #94A3B8;
+  pointer-events: none;
+}
+
 .input-wrapper input {
   width: 100%;
-  height: 44px;
-  padding: 0 40px 0 12px;
+  height: 48px;
+  padding: 0 44px 0 44px;
   border: 1px solid #E2E8F0;
   border-radius: 8px;
   font-size: 14px;
-  color: #1E293B;
+  color: #0F172A;
   background: #FFFFFF;
   transition: all 0.2s ease;
   outline: none;
@@ -320,16 +431,17 @@ h1 {
 }
 
 .input-wrapper input:focus {
-  border-color: #059669;
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+  border-color: #1E3A8A;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
 }
 
 .input-wrapper input.has-error {
-  border-color: #EF4444;
+  border-color: #DC2626;
+  background: #FEF2F2;
 }
 
 .input-wrapper input.has-error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .clear-btn,
@@ -338,8 +450,8 @@ h1 {
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: none;
   background: none;
@@ -348,6 +460,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color 0.2s ease;
 }
 
 .clear-btn:hover,
@@ -363,9 +476,10 @@ h1 {
 
 .error-text {
   font-size: 12px;
-  color: #EF4444;
+  color: #DC2626;
 }
 
+/* Form Options */
 .form-options {
   display: flex;
   align-items: center;
@@ -388,7 +502,7 @@ h1 {
 .checkbox-custom {
   width: 18px;
   height: 18px;
-  border: 1px solid #E2E8F0;
+  border: 2px solid #CBD5E1;
   border-radius: 4px;
   background: #FFFFFF;
   position: relative;
@@ -396,17 +510,17 @@ h1 {
 }
 
 .checkbox:checked + .checkbox-custom {
-  background: #059669;
-  border-color: #059669;
+  background: #1E3A8A;
+  border-color: #1E3A8A;
 }
 
 .checkbox:checked + .checkbox-custom::after {
   content: '';
   position: absolute;
-  left: 6px;
-  top: 2px;
-  width: 4px;
-  height: 8px;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
@@ -414,37 +528,45 @@ h1 {
 
 .forgot-link {
   font-size: 14px;
-  color: #059669;
+  color: #1E3A8A;
   text-decoration: none;
 }
 
 .forgot-link:hover {
-  color: #047857;
   text-decoration: underline;
 }
 
+/* Login Button */
 .login-btn {
   width: 100%;
-  height: 48px;
-  background: #059669;
+  height: 52px;
+  background: linear-gradient(135deg, #CA8A04 0%, #B87A03 100%);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 8px;
 }
 
 .login-btn:hover:not(:disabled) {
-  background: #047857;
+  background: linear-gradient(135deg, #B87A03 0%, #A66B02 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(202, 138, 4, 0.4);
+}
+
+.login-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .login-btn:disabled {
-  background: #94A3B8;
+  background: #CBD5E1;
   cursor: not-allowed;
 }
 
@@ -461,106 +583,116 @@ h1 {
   to { transform: rotate(360deg); }
 }
 
+/* Error Message */
 .error-message {
-  padding: 12px;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 8px;
-  color: #EF4444;
-  font-size: 14px;
-  text-align: center;
-}
-
-.divider {
   display: flex;
   align-items: center;
-  margin: 24px 0;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #E2E8F0;
-}
-
-.divider span {
-  padding: 0 16px;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 8px;
+  color: #DC2626;
   font-size: 14px;
-  color: #94A3B8;
 }
 
-.third-party-section {
-  display: flex;
-  gap: 12px;
+.error-message svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
-.third-party-btn {
-  flex: 1;
-  height: 44px;
+/* Security Tips */
+.security-tips {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #1E293B;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #E2E8F0;
 }
 
-.third-party-btn:hover {
-  background: #F8FAFC;
+.security-tips svg {
+  width: 16px;
+  height: 16px;
+  color: #16A34A;
 }
 
-.third-party-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-.third-party-btn.wechat {
-  color: #07C160;
-}
-
-.third-party-btn.wechat:hover {
-  background: rgba(7, 193, 96, 0.1);
-  border-color: #07C160;
-}
-
-.third-party-btn.google {
-  color: #4285F4;
-}
-
-.third-party-btn.google:hover {
-  background: rgba(66, 133, 244, 0.1);
-  border-color: #4285F4;
-}
-
-.register-hint {
-  margin-top: 24px;
-  text-align: center;
-  font-size: 14px;
+.security-tips span {
+  font-size: 12px;
   color: #64748B;
 }
 
-.register-hint a {
-  color: #059669;
-  text-decoration: none;
-  font-weight: 500;
+/* Responsive */
+@media (max-width: 1024px) {
+  .left-panel {
+    flex: 0 0 45%;
+    padding-left: 40px;
+  }
+  
+  .right-panel {
+    flex: 0 0 55%;
+  }
+  
+  .welcome-text h1 {
+    font-size: 36px;
+  }
 }
 
-.register-hint a:hover {
-  color: #047857;
-  text-decoration: underline;
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+  
+  .left-panel {
+    flex: 0 0 auto;
+    padding: 40px 24px;
+    min-height: 280px;
+  }
+  
+  .logo-area {
+    margin-bottom: 24px;
+  }
+  
+  .logo-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .logo-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .bank-name {
+    font-size: 22px;
+  }
+  
+  .welcome-text h1 {
+    font-size: 28px;
+  }
+  
+  .welcome-text p {
+    font-size: 16px;
+  }
+  
+  .right-panel {
+    flex: 1;
+    padding: 24px;
+  }
+  
+  .login-card {
+    padding: 32px 24px;
+  }
+  
+  .decoration {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .login-btn,
-  .third-party-btn,
   .input-wrapper input,
   .checkbox-custom {
     transition: none;
@@ -568,24 +700,6 @@ h1 {
   
   .spinner {
     animation: none;
-  }
-}
-
-/* Tablet: 768px - 1023px */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .login-container {
-    max-width: 90%;
-  }
-}
-
-/* Mobile: < 768px */
-@media (max-width: 767px) {
-  .login-card {
-    padding: 24px;
-  }
-  
-  .third-party-section {
-    flex-direction: column;
   }
 }
 </style>
