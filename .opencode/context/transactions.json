@@ -630,5 +630,229 @@
       }
     },
     "loggedAt": "2026-03-19T03:49:22.535Z"
+  },
+  {
+    "command": "state-update",
+    "timestamp": "2026-03-19T05:45:36.049Z",
+    "payload": {
+      "milestoneId": "ms_1773899136040",
+      "progress": 50,
+      "taskCompleted": {
+        "name": "测试任务",
+        "duration": "1m"
+      }
+    },
+    "loggedAt": "2026-03-19T05:45:36.051Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1773899136052_fen2gx",
+    "timestamp": "2026-03-19T05:45:36.053Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "id": "test_task_001",
+        "type": "addFeature",
+        "description": "测试任务",
+        "priority": "P1"
+      },
+      "context": {
+        "projectState": "init"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "loggedAt": "2026-03-19T05:45:36.053Z"
+  },
+  {
+    "command": "parallel-dispatch",
+    "transactionId": "txn_1773899136054_r1v7pp",
+    "timestamp": "2026-03-19T05:45:36.054Z",
+    "sender": "project-manager",
+    "parallelTaskId": "parallel_1773899136054",
+    "tasks": [
+      {
+        "receiver": "product-manager",
+        "payload": {
+          "task": {
+            "id": "t1",
+            "type": "generatePRD"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        }
+      },
+      {
+        "receiver": "ui-designer",
+        "payload": {
+          "task": {
+            "id": "t2",
+            "type": "generateUI"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        }
+      }
+    ],
+    "syncRequired": true,
+    "timeout": 300,
+    "loggedAt": "2026-03-19T05:45:36.055Z"
+  },
+  {
+    "command": "result",
+    "transactionId": "txn_1773899136052_fen2gx",
+    "timestamp": "2026-03-19T05:45:36.057Z",
+    "status": "success",
+    "payload": {
+      "taskId": "test_task_001",
+      "result": {
+        "filesCreated": [
+          "test.js"
+        ]
+      },
+      "selfTestPassed": true
+    },
+    "loggedAt": "2026-03-19T05:45:36.058Z"
+  },
+  {
+    "command": "result",
+    "transactionId": "txn_test_failed",
+    "timestamp": "2026-03-19T05:45:36.061Z",
+    "status": "failed",
+    "payload": {
+      "taskId": "test_task_failed",
+      "error": {
+        "code": "TEST_ERROR",
+        "message": "测试错误"
+      }
+    },
+    "loggedAt": "2026-03-19T05:45:36.061Z"
+  },
+  {
+    "command": "state-update",
+    "timestamp": "2026-03-19T05:48:48.266Z",
+    "payload": {
+      "milestoneId": "ms_1773899328262",
+      "progress": 50,
+      "taskCompleted": {
+        "name": "测试任务",
+        "duration": "1m"
+      }
+    },
+    "loggedAt": "2026-03-19T05:48:48.272Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1773899328274_s2nrzg",
+    "timestamp": "2026-03-19T05:48:48.275Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "id": "test_task_001",
+        "type": "addFeature",
+        "description": "测试任务",
+        "priority": "P1"
+      },
+      "context": {
+        "projectState": "init"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "loggedAt": "2026-03-19T05:48:48.275Z"
+  },
+  {
+    "command": "parallel-dispatch",
+    "transactionId": "txn_1773899328276_5061z4",
+    "timestamp": "2026-03-19T05:48:48.276Z",
+    "sender": "project-manager",
+    "parallelTaskId": "parallel_1773899328276",
+    "tasks": [
+      {
+        "receiver": "product-manager",
+        "payload": {
+          "task": {
+            "id": "t1",
+            "type": "generatePRD"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        }
+      },
+      {
+        "receiver": "ui-designer",
+        "payload": {
+          "task": {
+            "id": "t2",
+            "type": "generateUI"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        }
+      }
+    ],
+    "syncRequired": true,
+    "timeout": 300,
+    "loggedAt": "2026-03-19T05:48:48.277Z"
+  },
+  {
+    "command": "result",
+    "transactionId": "txn_1773899328274_s2nrzg",
+    "timestamp": "2026-03-19T05:48:48.282Z",
+    "status": "success",
+    "payload": {
+      "taskId": "test_task_001",
+      "result": {
+        "filesCreated": [
+          "test.js"
+        ]
+      },
+      "selfTestPassed": true
+    },
+    "loggedAt": "2026-03-19T05:48:48.286Z"
+  },
+  {
+    "command": "result",
+    "transactionId": "txn_test_failed",
+    "timestamp": "2026-03-19T05:48:48.286Z",
+    "status": "failed",
+    "payload": {
+      "taskId": "test_task_failed",
+      "error": {
+        "code": "TEST_ERROR",
+        "message": "测试错误"
+      }
+    },
+    "loggedAt": "2026-03-19T05:48:48.286Z"
   }
 ]

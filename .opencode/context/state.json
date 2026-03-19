@@ -174,6 +174,88 @@
         }
       ],
       "failed": []
+    },
+    {
+      "id": "parallel_1773899136054",
+      "description": "并行任务: product-manager, ui-designer",
+      "agents": [
+        "product-manager",
+        "ui-designer"
+      ],
+      "status": "pending",
+      "createdAt": "2026-03-19T05:45:36.055Z"
+    },
+    {
+      "id": "test_parallel_1773899136064",
+      "description": "测试并行任务",
+      "agents": [
+        "frontend-developer",
+        "ui-designer"
+      ],
+      "status": "completed",
+      "createdAt": "2026-03-19T05:45:36.065Z",
+      "completed": [
+        {
+          "agent": "frontend-developer",
+          "result": {
+            "filesCreated": [
+              "test.js"
+            ]
+          },
+          "time": "2026-03-19T05:45:36.065Z"
+        },
+        {
+          "agent": "ui-designer",
+          "result": {
+            "filesCreated": [
+              "design.md"
+            ]
+          },
+          "time": "2026-03-19T05:45:36.066Z"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "id": "parallel_1773899328276",
+      "description": "并行任务: product-manager, ui-designer",
+      "agents": [
+        "product-manager",
+        "ui-designer"
+      ],
+      "status": "pending",
+      "createdAt": "2026-03-19T05:48:48.278Z"
+    },
+    {
+      "id": "test_parallel_1773899328289",
+      "description": "测试并行任务",
+      "agents": [
+        "frontend-developer",
+        "ui-designer"
+      ],
+      "status": "completed",
+      "createdAt": "2026-03-19T05:48:48.289Z",
+      "completed": [
+        {
+          "agent": "frontend-developer",
+          "result": {
+            "filesCreated": [
+              "test.js"
+            ]
+          },
+          "time": "2026-03-19T05:48:48.290Z"
+        },
+        {
+          "agent": "ui-designer",
+          "result": {
+            "filesCreated": [
+              "design.md"
+            ]
+          },
+          "time": "2026-03-19T05:48:48.290Z"
+        }
+      ],
+      "failed": []
     }
   ]
 }
