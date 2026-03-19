@@ -14,22 +14,11 @@
 
 ## 命令
 
-### 开发与构建
 ```bash
-npm run dev        # 启动开发服务器 http://localhost:3000
-npm run build      # 生产构建到 dist/
-npm run preview    # 本地预览生产构建
-```
-
-### 测试 (Vitest)
-```bash
-npm run test         # 监听模式
-npm run test:run     # 运行一次
-npm run test:ui      # UI 模式
-
-# 运行单个测试文件
-npm run test:run -- src/__tests__/auth.spec.js
-npm run test:run -- src/__tests__/Login.spec.js
+npm run dev      # 启动开发服务器 http://localhost:3000
+npm run build    # 生产构建到 dist/
+npm run preview  # 本地预览生产构建
+npm run test     # 测试 (Vitest)
 ```
 
 ---
@@ -75,45 +64,7 @@ export default {
 | 工具/辅助 | camelCase | `formatDate.js` |
 | 常量 | UPPER_SNAKE_CASE | `MAX_RETRIES` |
 | Props | camelCase | `userName`, `isActive` |
-| 事件 | kebab-case | `@click` |
 | CSS 类 | kebab-case | `.user-avatar` |
-
-### 变量与函数
-```javascript
-const MAX_COUNT = 10
-const users = []
-let currentUser = null
-
-function fetchUser(id) { return axios.get(`/users/${id}`) }
-const handleClick = (event) => { console.log(event.target) }
-```
-
-### 错误处理
-```javascript
-async function loadData() {
-  try {
-    const response = await api.fetch()
-    this.data = response.data
-  } catch (error) {
-    console.error('加载数据失败:', error)
-    this.error = '加载数据失败，请重试。'
-  }
-}
-// ❌ 禁止空 catch 块
-```
-
-### Vue Router
-```javascript
-const Admin = () => import('@/views/Admin.vue')
-
-router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next({ name: 'Login', query: { redirect: to.fullPath } })
-  } else {
-    next()
-  }
-})
-```
 
 ---
 
@@ -132,31 +83,52 @@ src/
 
 ---
 
-## 重要说明
+## 决策引擎
 
-### Vue 2.7 特定
-- 使用 `beforeDestroy` 或 `beforeUnmount`（2.7 两者兼容）
-- 数组/对象 props 需要工厂函数：`default: () => []`
-- 2.7 支持部分 Composition API（如 `reactive`, `computed`）
+简化架构：利用LLM自身能力理解意图，最小化规则配置。
 
-### Vite 特定
-- 使用 `import.meta.env` 而非 `process.env`
-- `/public` 下的静态资源从根路径访问
+### 调用方式
 
-### 避免事项
-- ❌ 空 catch 块
-- ❌ 直接操作 DOM（使用 Vue 响应式）
-- ❌ 在模板中放逻辑（使用 methods/computed）
+```javascript
+const { decide } = require('.opencode/scripts/simplified/index');
+const result = decide('用户输入');
+// 返回: { intent, workflow, agent, agents, entities, parallel, skill, ... }
+```
+
+### CLI 调用
+```bash
+node .opencode/scripts/simplified/index.js --input "添加登录功能"
+node .opencode/scripts/simplified/index.js --status
+```
+
+### 意图类型
+| 类型 | 说明 | 关键词示例 |
+|------|------|-----------|
+| Query | 查询类 | 状态、进度、问题 |
+| Action | 执行类 | 添加、修改、优化、生成 |
+| Consult | 咨询类 | 怎么、如何、建议 |
+| Problem | 问题类 | 慢、错、报错 |
+| Change | 变更类 | 需求变更、调整 |
+
+### 常见工作流
+| 工作流 | Agent | 说明 |
+|--------|-------|------|
+| createProject | PM + UI | 新建项目（并行） |
+| addFeature | frontend-developer | 添加功能 |
+| fixIssue | frontend-developer | 修复问题 |
+| adjustStyle | ui-designer | 调整样式 |
+| generatePage | frontend-developer | 生成页面 |
+
+### 状态管理
+```javascript
+const { getState, setState } = require('.opencode/scripts/simplified/index');
+getState();           // { currentState, history }
+setState('developing', '开始开发');
+```
 
 ---
 
-## 添加新依赖
-
-添加任何包之前检查是否兼容 Vue 2 和 Node 18+。常用包：`lodash-es`, `dayjs`, `axios`, `vuex`。
-
----
-
-## 自定义 Agents
+## Agents
 
 | Agent | 描述 |
 |-------|------|
@@ -164,3 +136,13 @@ src/
 | product-manager | 需求分析 |
 | ui-designer | UI 设计 |
 | frontend-developer | 前端开发 |
+| tester | 功能测试 |
+
+---
+
+## 注意事项
+
+- Vue 2.7: 使用 `beforeDestroy` 或 `beforeUnmount`
+- Vite: 使用 `import.meta.env` 而非 `process.env`
+- 禁止空 catch 块
+- 禁止直接操作 DOM

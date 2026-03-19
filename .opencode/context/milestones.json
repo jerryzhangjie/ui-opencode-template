@@ -1,0 +1,25 @@
+{
+  "milestones": [
+    {
+      "id": "ms_1773891812696",
+      "name": "登录模块测试",
+      "description": "测试里程碑功能",
+      "deadline": "2026-03-20",
+      "status": "pending",
+      "progress": 0,
+      "tasks": [],
+      "createdAt": "2026-03-19T03:43:32.696Z"
+    },
+    {
+      "id": "ms_1773891849329",
+      "name": "Test",
+      "description": "Test desc",
+      "deadline": "2026-03-20",
+      "status": "pending",
+      "progress": 0,
+      "tasks": [],
+      "createdAt": "2026-03-19T03:44:09.329Z"
+    }
+  ],
+  "progress": 17
+}

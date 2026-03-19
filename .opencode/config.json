@@ -1,0 +1,39 @@
+{
+  "project": {
+    "name": "ui-template",
+    "framework": "vue2",
+    "frameworkVersion": "2.7"
+  },
+  "agents": {
+    "project-manager": { "role": "coordinator" },
+    "product-manager": { "role": "analyzer" },
+    "ui-designer": { "role": "designer" },
+    "frontend-developer": { "role": "developer" },
+    "tester": { "role": "tester" }
+  },
+  "paths": {
+    "context": ".opencode/context",
+    "docs": "doc",
+    "components": "src/components",
+    "views": "src/views"
+  },
+  "decisionEngine": {
+    "version": "v2",
+    "type": "enhanced",
+    "engine": ".opencode/scripts/enhanced-decision/index.js",
+    "contract": ".opencode/scripts/enhanced-decision/contract.js",
+    "legacy": ".opencode/scripts/simplified/index.js"
+  },
+  "features": {
+    "vectorSimilarity": true,
+    "weightMechanism": true,
+    "multiIntent": true,
+    "confidenceScoring": true,
+    "parallelState": true,
+    "branchState": true,
+    "milestone": true,
+    "progressTracking": true,
+    "agentContract": true,
+    "transactionLog": true
+  }
+}
