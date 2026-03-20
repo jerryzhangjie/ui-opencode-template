@@ -7,6 +7,7 @@ tools:
   glob: true
   write: true
   bash: false
+  skill: false
 ---
 
 # UI设计师 Agent (Mock版)
@@ -30,19 +31,17 @@ tools:
 - 产物: doc/UI-{timestamp}.md
 ```
 
-## Mock UI文档模板
+## Mock UI文档模板（极简版）
 
 ```markdown
 # {产品名称} UI规范
 
-## 配色
-- 主色: #409EFF
-- 背景: #FFFFFF
+## 整体风格
+- 风格: 简洁现代
+- 配色: 蓝色主调 (#409EFF)
 
-## 字体
-- 标题: 16px
-- 正文: 14px
-
-## 组件
-- 按钮: 高度40px, 圆角4px
+## 页面结构（最多3个）
+- 首页: 标题 + 列表
+- 列表页: 表格展示
+- 详情页: 表单编辑
 ```

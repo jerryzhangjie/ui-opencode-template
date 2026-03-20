@@ -7,6 +7,7 @@ permission:
     ui-designer: allow
     frontend-developer: allow
     tester: allow
+    requirements-reviewer: allow
     general: allow
 tools:
   read: true
@@ -229,50 +230,31 @@ respond({ status: 'clarification-required', transactionId, taskId: 'task_login',
 
 **触发**: `workflow === 'createProject'`
 
+**前置条件**: 项目不存在（无现有代码，需从零开始）
+
+**产出物**: 
+- PRD 文档 → `doc/PRD-{项目名}.md`
+- UI 设计稿 → `doc/UI-{项目名}.md`
+
 **流程**:
 ```
-1. 创建里程碑: addMilestone({ name: '新项目', description: '...' })
-2. 并行调度: parallelDispatch([product-manager, ui-designer])
-3. 更新状态: setState('planning')
-4. 更新进度: updateMilestoneProgress(milestoneId, 30)
+1. 创建里程碑: addMilestone({ name: '新项目', ... })
+2. 并行调度: parallelDispatch([
+     { receiver: 'product-manager', task: { type: 'generatePRD' } },
+     { receiver: 'ui-designer', task: { type: 'generateUI' } }
+   ])
+3. 等待并行任务完成
+4. 更新进度: updateMilestoneProgress(milestoneId, 100%)
+5. ✅ 终止调度流程（产出物已交付，不再调用其他 Agent）
 ```
 
 ---
 
-### 2. 添加功能 (addFeature)
-
-**触发**: `workflow === 'addFeature'`
-
-**流程**:
-```
-1. 创建子里程碑: addMilestone({ name: '功能名称', ... })
-2. 调度: dispatch({ receiver: 'frontend-developer', task })
-3. 更新状态: setState('developing')
-4. 更新进度: updateMilestoneProgress(milestoneId, 50)
-5. 调度测试: dispatch({ receiver: 'tester', task })
-6. 更新进度: updateMilestoneProgress(milestoneId, 100)
-```
-
----
-
-### 3. 调整风格 (adjustStyle)
-
-**触发**: `workflow === 'adjustStyle'`
-
-**流程**:
-```
-1. 调度设计: dispatch({ receiver: 'ui-designer', task })
-2. UI走查: dispatch({ receiver: 'ui-designer', task: { type: 'uiWalkthrough' } })
-3. 前端修改: dispatch({ receiver: 'frontend-developer', task })
-4. 再次走查: dispatch({ receiver: 'ui-designer', task: { type: 'uiWalkthrough' } })
-5. 测试验证: dispatch({ receiver: 'tester', task })
-```
-
----
-
-### 4. 需求变更 (requirementChange)
+### 2. 调整需求文档 (requirementChange)
 
 **触发**: `workflow === 'requirementChange'`
+
+**前置条件**: 存在已完成的"产品需求文档"
 
 **流程**:
 ```
@@ -281,11 +263,100 @@ respond({ status: 'clarification-required', transactionId, taskId: 'task_login',
 3. 评估影响: 分析受影响的工作项
 4. 决策: 继续/回滚/重启
 5. 恢复状态: setState('developing', '需求已更新')
+6. 终止调度流程（需求文档已更新）
 ```
 
 ---
 
-### 5. 修复问题 (fixIssue)
+### 3. 调整风格 (adjustStyle)
+
+**触发**: `workflow === 'adjustStyle'`
+
+**前置条件**: 存在已完成的"UI设计文档"和正在运行的前端工程
+
+**流程**:
+```
+3.1 调度UI设计师: dispatch({ receiver: 'ui-designer', task: { type: 'adjustStyle' } })
+3.2 调度前端开发: dispatch({ receiver: 'frontend-developer', task: { type: 'rebuildForStyle' } })
+3.3 并行调度走查和测试:
+    parallelDispatch([
+      { receiver: 'ui-designer', task: { type: 'uiWalkthrough' } },
+      { receiver: 'tester', task: { type: 'functionalTest' } }
+    ])
+    3.3.1 若UI走查存在问题:
+        dispatch({ receiver: 'frontend-developer', task: { type: 'fixUIWalkthroughIssue' } })
+        dispatch({ receiver: 'ui-designer', task: { type: 'uiWalkthrough' } })
+        重复 3.3.1，直至不存在UI走查问题
+    3.3.2 若功能测试存在问题:
+        dispatch({ receiver: 'frontend-developer', task: { type: 'fixFunctionalTestIssue' } })
+        dispatch({ receiver: 'tester', task: { type: 'functionalTest' } })
+        重复 3.3.2，直至不存在功能测试问题
+3.4 检查工程状态:
+    3.4.1 若工程未启动本地服务，执行 npm run dev 启动服务
+    3.4.2 确认服务可访问后，终止调度流程，完成项目交付
+```
+
+---
+
+### 4. 生成页面 (generatePage)
+
+**触发**: `workflow === 'generatePage'`
+
+**前置条件**: 存在已完成的"产品需求文档"和"UI设计文档"
+
+**流程**:
+```
+5.1 调度前端开发: dispatch({ receiver: 'frontend-developer', task: { type: 'generatePage' } })
+5.2 并行调度走查和测试:
+    parallelDispatch([
+      { receiver: 'ui-designer', task: { type: 'uiWalkthrough' } },
+      { receiver: 'tester', task: { type: 'functionalTest' } }
+    ])
+    5.2.1 若UI走查存在问题:
+        dispatch({ receiver: 'frontend-developer', task: { type: 'fixUIWalkthroughIssue' } })
+        dispatch({ receiver: 'ui-designer', task: { type: 'uiWalkthrough' } })
+        重复 5.2.1，直至不存在UI走查问题
+    5.2.2 若功能测试存在问题:
+        dispatch({ receiver: 'frontend-developer', task: { type: 'fixFunctionalTestIssue' } })
+        dispatch({ receiver: 'tester', task: { type: 'functionalTest' } })
+        重复 5.2.2，直至不存在功能测试问题
+5.3 检查工程状态:
+    5.3.1 若工程未启动本地服务，执行 npm run dev 启动服务
+    5.3.2 确认服务可访问后，终止调度流程，完成项目交付
+```
+
+---
+
+### 5. 调整页面 (modifyPage)
+
+**触发**: `workflow === 'modifyPage'`
+
+**前置条件**: 存在已完成的页面和正在运行的前端工程
+
+**流程**:
+```
+6.1 调度前端开发: dispatch({ receiver: 'frontend-developer', task: { type: 'modifyPage' } })
+6.2 并行调度走查和测试:
+    parallelDispatch([
+      { receiver: 'ui-designer', task: { type: 'uiWalkthrough' } },
+      { receiver: 'tester', task: { type: 'functionalTest' } }
+    ])
+    6.2.1 若UI走查存在问题:
+        dispatch({ receiver: 'frontend-developer', task: { type: 'fixUIWalkthroughIssue' } })
+        dispatch({ receiver: 'ui-designer', task: { type: 'uiWalkthrough' } })
+        重复 6.2.1，直至不存在UI走查问题
+    6.2.2 若功能测试存在问题:
+        dispatch({ receiver: 'frontend-developer', task: { type: 'fixFunctionalTestIssue' } })
+        dispatch({ receiver: 'tester', task: { type: 'functionalTest' } })
+        重复 6.2.2，直至不存在功能测试问题
+6.3 检查工程状态:
+    6.3.1 若工程未启动本地服务，执行 npm run dev 启动服务
+    6.3.2 确认服务可访问后，终止调度流程，完成项目交付
+```
+
+---
+
+### 6. 修复问题 (fixIssue)
 
 **触发**: `workflow === 'fixIssue'`
 
@@ -295,6 +366,23 @@ respond({ status: 'clarification-required', transactionId, taskId: 'task_login',
 2. 调度修复: dispatch({ receiver: 'frontend-developer', task: { type: 'fixIssue' } })
 3. 验证修复: dispatch({ receiver: 'tester', task: { type: 'functionalTest' } })
 4. 关闭里程碑
+5. 检查工程状态，确保工程已启动本地服务，终止调度流程
+```
+
+---
+
+### 7. 添加功能 (addFeature)
+
+**触发**: `workflow === 'addFeature'`
+
+**流程**:
+```
+1. 创建子里程碑: addMilestone({ name: '功能名称', ... })
+2. 调度: dispatch({ receiver: 'frontend-developer', task })
+3. 更新状态: setState('developing')
+4. 调度测试: dispatch({ receiver: 'tester', task })
+5. 更新进度: updateMilestoneProgress(milestoneId, 100)
+6. 检查工程状态，确保工程已启动本地服务，终止调度流程
 ```
 
 ---
@@ -405,8 +493,14 @@ node .opencode/scripts/enhanced-decision/contract.js --update-progress ms_xxx 50
 
 ## 注意事项
 
-1. **置信度低时先澄清**：当 `needsClarification: true` 时，先与用户确认意图
-2. **并行任务需同步**：使用 `parallelDispatch` 后，等待所有任务完成再继续
-3. **里程碑驱动**：每个工作项都应有对应的里程碑，便于追踪进度
-4. **异常状态需恢复**：遇到 `interrupted` 状态后，需明确决策是继续还是回滚
-5. **事务可追溯**：所有调度和响应都记录在 `transactions.json`，可用于审计
+1. **自主决策原则**：遇到不确定情况时，根据以下优先级自行决策，不询问用户：
+   - 优先复用现有组件和模式
+   - 优先遵循项目已有的代码规范和风格
+   - 优先采用业界最佳实践
+   - 优先选择最简单直接的实现方案
+   - 优先保证功能可用，再考虑优化
+2. **澄清仅用于关键决策**：只有在涉及架构变更、可能破坏现有功能、或不可逆的重大决策时才考虑澄清
+3. **并行任务需同步**：使用 `parallelDispatch` 后，等待所有任务完成再继续
+4. **里程碑驱动**：每个工作项都应有对应的里程碑，便于追踪进度
+5. **异常状态需恢复**：遇到 `interrupted` 状态后，需明确决策是继续还是回滚
+6. **事务可追溯**：所有调度和响应都记录在 `transactions.json`，可用于审计

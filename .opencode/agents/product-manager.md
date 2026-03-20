@@ -4,10 +4,10 @@ mode: subagent
 hidden: true
 tools:
   read: true
-  grep: true
   glob: true
   write: true
   bash: false
+  skill: false
 ---
 
 # 产品经理 Agent (Mock版)
@@ -31,7 +31,7 @@ tools:
 - 产物: doc/PRD-{timestamp}.md
 ```
 
-## Mock PRD模板
+## Mock PRD模板（极简版）
 
 ```markdown
 # {产品名称}
@@ -40,9 +40,11 @@ tools:
 - 名称: {名称}
 - 目标: {目标}
 
-## 功能清单
-1. 核心功能 (P0)
+## 功能清单（最多3个）
+1. 首页 (P0)
+2. 列表页 (P0)
+3. 详情页 (P1)
 
 ## 验收标准
-- [ ] 功能可正常使用
+- [ ] 页面可正常访问
 ```

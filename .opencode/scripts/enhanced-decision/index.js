@@ -7,13 +7,14 @@
  * - Multi-intent detection
  * - Confidence scoring
  * 
+ * 依赖: context/manager.js
+ * 
  * Usage:
  *   node index.js --input "用户输入"
  *   const { decide } = require('./index');
  */
 
-const fs = require('fs');
-const path = require('path');
+const manager = require('../../context/manager');
 
 const WORKFLOW_DEFINITIONS = {
   createProject: {
@@ -41,10 +42,12 @@ const WORKFLOW_DEFINITIONS = {
       { text: '做个功能', weight: 0.9 },
       { text: '写个功能', weight: 0.9 }
     ],
-    agents: ['frontend-developer'],
+    agents: ['frontend-developer', 'tester'],
     parallel: false,
     phase: 'development',
-    priority: 3
+    priority: 3,
+    requiresUIWalkthrough: false,
+    requiresFunctionalTest: true
   },
   modifyPage: {
     keywords: [
@@ -53,10 +56,12 @@ const WORKFLOW_DEFINITIONS = {
       { text: '调整页面', weight: 0.8 },
       { text: '改一下', weight: 0.5 }
     ],
-    agents: ['frontend-developer'],
+    agents: ['frontend-developer', 'ui-designer', 'tester'],
     parallel: false,
     phase: 'development',
-    priority: 3
+    priority: 3,
+    requiresUIWalkthrough: true,
+    requiresFunctionalTest: true
   },
   adjustStyle: {
     keywords: [
@@ -68,11 +73,12 @@ const WORKFLOW_DEFINITIONS = {
       { text: '样式调整', weight: 0.7 },
       { text: '好看一点', weight: 0.6 }
     ],
-    agents: ['ui-designer', 'frontend-developer'],
+    agents: ['ui-designer', 'frontend-developer', 'tester'],
     parallel: false,
     phase: 'development',
     priority: 4,
-    requiresUIWalkthrough: true
+    requiresUIWalkthrough: true,
+    requiresFunctionalTest: true
   },
   fixIssue: {
     keywords: [
@@ -85,7 +91,8 @@ const WORKFLOW_DEFINITIONS = {
     agents: ['frontend-developer'],
     parallel: false,
     phase: 'verification',
-    priority: 1
+    priority: 1,
+    requiresFunctionalTest: true
   },
   generatePage: {
     keywords: [
@@ -98,10 +105,12 @@ const WORKFLOW_DEFINITIONS = {
       { text: '做页面', weight: 0.9 },
       { text: '写页面', weight: 0.9 }
     ],
-    agents: ['frontend-developer'],
+    agents: ['frontend-developer', 'ui-designer', 'tester'],
     parallel: false,
     phase: 'development',
-    priority: 2
+    priority: 2,
+    requiresUIWalkthrough: true,
+    requiresFunctionalTest: true
   },
   optimize: {
     keywords: [
@@ -175,74 +184,28 @@ const INTENT_PATTERNS = {
   Action: [/新项目|从零|新建|创建|添加|新增|修改|调整|优化|生成|做|修复/]
 };
 
-const STATE_FILE = '.opencode/context/state.json';
-const MILESTONE_FILE = '.opencode/context/milestones.json';
-
-function loadState() {
-  try {
-    if (fs.existsSync(STATE_FILE)) {
-      return JSON.parse(fs.readFileSync(STATE_FILE, 'utf-8'));
-    }
-  } catch (e) {}
-  return createDefaultState();
-}
-
-function saveState(state) {
-  const dir = path.dirname(STATE_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
-  return state;
-}
-
-function createDefaultState() {
-  return {
-    currentState: 'init',
-    branches: {},
-    parallelTasks: [],
-    history: [],
-    lastUpdate: new Date().toISOString()
-  };
-}
-
-function loadMilestones() {
-  try {
-    if (fs.existsSync(MILESTONE_FILE)) {
-      return JSON.parse(fs.readFileSync(MILESTONE_FILE, 'utf-8'));
-    }
-  } catch (e) {}
-  return { milestones: [], progress: 0 };
-}
-
-function saveMilestones(milestones) {
-  const dir = path.dirname(MILESTONE_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(MILESTONE_FILE, JSON.stringify(milestones, null, 2));
-  return milestones;
-}
-
 function tokenize(text) {
   const tokens = new Set();
   text = text.toLowerCase();
-  
+
   const chinese = text.match(/[\u4e00-\u9fa5]+/g) || [];
   const english = text.match(/[a-z0-9]+/g) || [];
-  
+
   chinese.forEach(word => {
     tokens.add(word);
     for (let i = 2; i <= Math.min(4, word.length); i++) {
       tokens.add(word.substring(0, i));
     }
   });
-  
+
   english.forEach(word => {
     tokens.add(word);
     tokens.add(word.substring(0, Math.min(4, word.length)));
   });
-  
+
   return tokens;
 }
 
-// 同义词映射
 const SYNONYMS = {
   '新': ['做', '建', '创建'],
   '一个': ['款', '个'],
@@ -252,45 +215,43 @@ const SYNONYMS = {
 function calculateSimilarity(text1, text2) {
   const t1 = text1.toLowerCase();
   const t2 = text2.toLowerCase();
-  
+
   if (t1 === t2) return 1.0;
-  
+
   if (t1.includes(t2)) {
     return Math.min(0.95, 0.5 + (t2.length / t1.length) * 0.45);
   }
   if (t2.includes(t1)) return 0.9;
-  
-  // 创建扩展 token 集（包含同义词）
+
   const expandTokens = (text) => {
     const baseTokens = tokenize(text);
     const expanded = new Set(baseTokens);
-    
-    // 添加同义词
+
     for (const word of baseTokens) {
       if (SYNONYMS[word]) {
         SYNONYMS[word].forEach(syn => expanded.add(syn));
       }
     }
-    
+
     return expanded;
   };
-  
+
   const words1 = expandTokens(t1);
   const words2 = expandTokens(t2);
-  
+
   const intersection = [...words1].filter(w => words2.has(w));
   const union = new Set([...words1, ...words2]);
-  
+
   if (union.size === 0) return 0;
   const jaccard = intersection.length / union.size;
-  
+
   const lenBonus = Math.min(t2.length, 4) / 4 * 0.2;
   return Math.min(jaccard + lenBonus, 0.9);
 }
 
 function classifyIntent(input) {
   const lower = input.toLowerCase();
-  
+
   for (const [intent, patterns] of Object.entries(INTENT_PATTERNS)) {
     if (patterns.some(p => p.test(lower))) {
       return intent;
@@ -301,15 +262,15 @@ function classifyIntent(input) {
 
 function matchWorkflowWithWeights(input, workflows) {
   const results = [];
-  
+
   for (const [name, config] of Object.entries(workflows)) {
     let score = 0;
     let matchedKeywords = [];
-    
+
     for (const kw of config.keywords) {
       const similarity = calculateSimilarity(input, kw.text);
       const weightedScore = similarity * kw.weight;
-      
+
       if (similarity > 0.2) {
         score += weightedScore;
         matchedKeywords.push({
@@ -320,7 +281,7 @@ function matchWorkflowWithWeights(input, workflows) {
         });
       }
     }
-    
+
     if (score > 0) {
       results.push({
         name,
@@ -330,12 +291,12 @@ function matchWorkflowWithWeights(input, workflows) {
       });
     }
   }
-  
+
   results.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
     return (b.config.priority || 5) - (a.config.priority || 5);
   });
-  
+
   return results;
 }
 
@@ -346,7 +307,7 @@ function extractEntities(input) {
     severity: /(P0|P1|P2|P3|阻断|严重|一般|建议|低)/,
     tech: /(vue|react|typescript|python|node|java)/i
   };
-  
+
   const entities = {};
   for (const [key, pattern] of Object.entries(patterns)) {
     const match = pattern.exec(input);
@@ -364,14 +325,14 @@ function extractEntities(input) {
       }
     }
   }
-  
+
   return entities;
 }
 
 function detectMultiIntent(input) {
   const intents = [];
   const segments = input.split(/[,，;；]/).map(s => s.trim()).filter(Boolean);
-  
+
   if (segments.length > 1) {
     for (const segment of segments) {
       const intent = classifyIntent(segment);
@@ -386,7 +347,7 @@ function detectMultiIntent(input) {
       }
     }
   }
-  
+
   return intents;
 }
 
@@ -394,12 +355,12 @@ function decide(userInput, context = {}) {
   const intents = detectMultiIntent(userInput);
   const primaryIntent = classifyIntent(userInput);
   const workflowMatches = matchWorkflowWithWeights(userInput, WORKFLOW_DEFINITIONS);
-  
+
   const primary = workflowMatches[0] || { name: 'unknown', score: 0, config: {} };
   const entities = extractEntities(userInput);
-  
+
   const confidence = Math.min(primary.score / 3, 1);
-  
+
   return {
     intent: primaryIntent,
     workflow: primary.name,
@@ -412,153 +373,15 @@ function decide(userInput, context = {}) {
     phase: primary.config.phase || 'any',
     entities,
     requiresUIWalkthrough: primary.config.requiresUIWalkthrough || false,
+    requiresFunctionalTest: primary.config.requiresFunctionalTest || false,
     requiresDocUpdate: primary.config.requiresDocUpdate || false,
     isQuery: primary.config.isQuery || false,
-    needsClarification: confidence < 0.25,
+    needsClarification: confidence < 0.1,
     suggestions: workflowMatches.slice(0, 3).map(w => ({
       workflow: w.name,
       score: w.score,
       reason: w.matchedKeywords.slice(0, 2).map(m => m.keyword).join(', ')
     }))
-  };
-}
-
-function getState() {
-  return loadState();
-}
-
-function setState(newState, note = '', branch = null) {
-  const state = loadState();
-  const timestamp = new Date().toISOString();
-  
-  if (branch) {
-    if (!state.branches) state.branches = {};
-    if (!state.branches[branch]) state.branches[branch] = [];
-    
-    state.branches[branch].push({
-      from: state.currentState,
-      to: newState,
-      time: timestamp,
-      note
-    });
-  } else {
-    state.history.push({
-      from: state.currentState,
-      to: newState,
-      time: timestamp,
-      note,
-      branch: branch || 'main'
-    });
-  }
-  
-  state.currentState = newState;
-  state.lastUpdate = timestamp;
-  
-  return { changed: true, state, transition: { from: state.history[state.history.length - 1]?.from, to: newState } };
-}
-
-function createParallelTask(taskId, description, agents) {
-  const state = loadState();
-  if (!state.parallelTasks) state.parallelTasks = [];
-  
-  const task = {
-    id: taskId,
-    description,
-    agents,
-    status: 'pending',
-    createdAt: new Date().toISOString(),
-    completed: [],
-    failed: []
-  };
-  
-  state.parallelTasks.push(task);
-  saveState(state);
-  return task;
-}
-
-function updateParallelTask(taskId, agentId, status, result = null) {
-  const state = loadState();
-  const task = state.parallelTasks.find(t => t.id === taskId);
-  
-  if (task) {
-    if (status === 'completed') {
-      task.completed.push({ agent: agentId, result, time: new Date().toISOString() });
-    } else if (status === 'failed') {
-      task.failed.push({ agent: agentId, result, time: new Date().toISOString() });
-    }
-    
-    task.status = task.completed.length === task.agents.length ? 'completed' : 
-                   task.failed.length > 0 ? 'partial' : 'in_progress';
-  }
-  
-  saveState(state);
-  return task;
-}
-
-function addMilestone(name, description, deadline = null) {
-  const data = loadMilestones();
-  const milestone = {
-    id: `ms_${Date.now()}`,
-    name,
-    description,
-    deadline,
-    status: 'pending',
-    progress: 0,
-    tasks: [],
-    createdAt: new Date().toISOString()
-  };
-  
-  data.milestones.push(milestone);
-  data.progress = calculateOverallProgress(data.milestones);
-  saveMilestones(data);
-  
-  return milestone;
-}
-
-function updateMilestoneProgress(milestoneId, progress, taskCompleted = null) {
-  const data = loadMilestones();
-  const milestone = data.milestones.find(m => m.id === milestoneId);
-  
-  if (milestone) {
-    milestone.progress = Math.min(Math.max(progress, 0), 100);
-    milestone.status = progress >= 100 ? 'completed' : progress > 0 ? 'in_progress' : 'pending';
-    
-    if (taskCompleted) {
-      milestone.tasks.push({
-        ...taskCompleted,
-        completedAt: new Date().toISOString()
-      });
-    }
-  }
-  
-  data.progress = calculateOverallProgress(data.milestones);
-  saveMilestones(data);
-  
-  return milestone;
-}
-
-function calculateOverallProgress(milestones) {
-  if (milestones.length === 0) return 0;
-  const total = milestones.reduce((sum, m) => sum + m.progress, 0);
-  return Math.round(total / milestones.length);
-}
-
-function getProgress() {
-  const state = loadState();
-  const milestones = loadMilestones();
-  
-  return {
-    currentState: state.currentState,
-    overallProgress: milestones.progress,
-    milestones: milestones.milestones.map(m => ({
-      id: m.id,
-      name: m.name,
-      status: m.status,
-      progress: m.progress,
-      deadline: m.deadline
-    })),
-    parallelTasks: state.parallelTasks || [],
-    lastUpdate: state.lastUpdate
   };
 }
 
@@ -570,7 +393,7 @@ function formatDecision(d) {
     `**置信度**: ${d.confidenceLevel} (${Math.round(d.confidence * 100)}%)`,
     `**Agent**: ${d.agents.join(' → ')}`
   ];
-  
+
   if (d.parallel) lines.push(`**调度**: 并行`);
   if (d.multiIntent) {
     lines.push('', '**多意图检测**:');
@@ -578,17 +401,18 @@ function formatDecision(d) {
       lines.push(`${i + 1}. [${item.canParallel ? '可并行' : '顺序'}] ${item.segment} → ${item.workflow.name}`);
     });
   }
-  
+
   if (d.requiresUIWalkthrough) lines.push(`**后续**: UI走查`);
+  if (d.requiresFunctionalTest) lines.push(`**后续**: 功能测试`);
   if (d.requiresDocUpdate) lines.push(`**后续**: 更新文档`);
-  
+
   if (d.entities.page || d.entities.action) {
     lines.push('', '**实体**:');
     if (d.entities.page) lines.push(`- 页面: ${d.entities.page}`);
     if (d.entities.action) lines.push(`- 动作: ${d.entities.action}`);
     if (d.entities.severity) lines.push(`- 严重程度: ${d.entities.severity}`);
   }
-  
+
   if (d.needsClarification) {
     lines.push('', '⚠️ **需要澄清**');
     if (d.suggestions?.length > 0) {
@@ -598,27 +422,27 @@ function formatDecision(d) {
       });
     }
   }
-  
+
   return lines.join('\n');
 }
 
 function parseArgs() {
   const args = process.argv.slice(2);
   let input = null, status = false, help = false, progress = false;
-  
+
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--input' || args[i] === '-i') input = args[++i];
     else if (args[i] === '--status' || args[i] === '-s') status = true;
     else if (args[i] === '--progress' || args[i] === '-p') progress = true;
     else if (args[i] === '--help' || args[i] === '-h') help = true;
   }
-  
+
   return { input, status, progress, help };
 }
 
 function main() {
   const opts = parseArgs();
-  
+
   if (opts.help) {
     console.log(`
 Enhanced Decision Engine v2
@@ -636,9 +460,9 @@ Enhanced Decision Engine v2
 `);
     return;
   }
-  
+
   if (opts.status) {
-    const state = getState();
+    const state = manager.getState();
     console.log(`\n# 项目状态
 
 当前状态: ${state.currentState}
@@ -648,9 +472,9 @@ Enhanced Decision Engine v2
 `);
     return;
   }
-  
+
   if (opts.progress) {
-    const prog = getProgress();
+    const prog = manager.getProgress();
     console.log(`\n# 项目进度
 
 整体进度: ${prog.overallProgress}%
@@ -662,7 +486,7 @@ Enhanced Decision Engine v2
       const bar = '█'.repeat(Math.round(m.progress / 10)) + '░'.repeat(10 - Math.round(m.progress / 10));
       console.log(`  [${bar}] ${m.name} (${m.progress}%) - ${m.status}`);
     });
-    
+
     if (prog.parallelTasks.length > 0) {
       console.log('\n并行任务:');
       prog.parallelTasks.forEach(t => {
@@ -671,12 +495,12 @@ Enhanced Decision Engine v2
     }
     return;
   }
-  
+
   if (!opts.input) {
     console.error('请提供 --input 参数');
     return;
   }
-  
+
   console.log(`\n输入: "${opts.input}"\n`);
   const decision = decide(opts.input);
   console.log(formatDecision(decision));
@@ -688,14 +512,12 @@ if (require.main === module) main();
 module.exports = {
   decide,
   formatDecision,
-  getState,
-  setState,
-  createParallelTask,
-  updateParallelTask,
-  addMilestone,
-  updateMilestoneProgress,
-  getProgress,
-  loadState,
-  loadMilestones,
+  getState: manager.getState,
+  setState: manager.setState,
+  createParallelTask: manager.createParallelTask,
+  updateParallelTask: manager.updateParallelTask,
+  addMilestone: manager.addMilestone,
+  updateMilestoneProgress: manager.updateMilestoneProgress,
+  getProgress: manager.getProgress,
   calculateSimilarity
 };

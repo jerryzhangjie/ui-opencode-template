@@ -32,7 +32,7 @@ tools:
 - 创建文件: src/views/{页面}.vue
 ```
 
-## Mock组件模板
+## Mock组件模板（极简版）
 
 ```vue
 <template>
@@ -46,8 +46,4 @@ export default {
   name: '{页面名称}'
 }
 </script>
-
-<style scoped>
-.page {}
-</style>
 ```
