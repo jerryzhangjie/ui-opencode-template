@@ -1,24 +1,51 @@
 /**
- * Agent Contract Protocol v2
+ * Dispatch - 任务调度
  * 
- * 标准化 PM 与 SubAgent 之间的通信协议
- * 
- * Features:
- * - 上下文链追踪
- * - 结果缓存
- * - 智能上下文注入
- * 
- * 依赖: context/manager.js, context/session.js, context/cache.js
+ * 功能：标准调度、并行调度、响应处理
+ * 特性：超时控制、重试机制、上下文注入
  */
 
-const manager = require('../../context/manager');
-const session = require('../../context/session');
-const cache = require('../../context/cache');
+const state = require('./state');
+const prompt = require('./prompt');
+const session = require('../lib/session');
+const cache = require('../lib/cache');
+
+const DEFAULT_OPTIONS = {
+  timeout: 300000,
+  retry: 0,
+  retryDelay: 1000,
+  retryBackoff: 'exponential',
+  autoInjectContext: true,
+  useCache: true
+};
 
 let _currentAgent = 'project-manager';
 
 function setCurrentAgent(agent) {
   _currentAgent = agent;
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function executeWithTimeout(promise, timeout) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`TIMEOUT: Operation exceeded ${timeout}ms`));
+    }, timeout);
+    
+    promise.then(
+      result => {
+        clearTimeout(timer);
+        resolve(result);
+      },
+      error => {
+        clearTimeout(timer);
+        reject(error);
+      }
+    );
+  });
 }
 
 async function dispatch({ 
@@ -27,37 +54,36 @@ async function dispatch({
   context = {}, 
   artifacts = {}, 
   requirements = {},
-  autoInjectContext = true,
-  includeArtifacts = true,
-  contextId = null,
-  useCache = true,
-  sessionId = null
+  options = {}
 }) {
-  const txnId = manager.generateTxnId();
+  const opts = { ...DEFAULT_OPTIONS, ...options };
+  const txnId = state.generateTxnId();
   
-  const currentSession = session.getSession(sessionId) || session.getSession();
+  const currentSession = session.getSession() || session.getSession();
   const activeSessionId = currentSession?.id;
   
   const enrichedContext = {
-    projectState: manager.getState().currentState,
+    projectState: state.getState().currentState,
     ...context
   };
   
-  if (autoInjectContext && activeSessionId) {
+  if (opts.autoInjectContext && activeSessionId) {
     const contextInjection = session.injectContext(activeSessionId, receiver, {
       type: task.type,
       description: task.description,
       artifacts: Object.values(artifacts || {})
     });
     
-    enrichedContext.previousOutput = contextInjection.previousOutput;
-    enrichedContext.previousArtifacts = contextInjection.previousArtifacts;
-    enrichedContext.previousSummary = contextInjection.previousSummary;
-    enrichedContext.relevantHistory = contextInjection.relevantHistory;
+    Object.assign(enrichedContext, {
+      previousOutput: contextInjection.previousOutput,
+      previousArtifacts: contextInjection.previousArtifacts,
+      previousSummary: contextInjection.previousSummary,
+      relevantHistory: contextInjection.relevantHistory
+    });
   }
   
   let cachedResult = null;
-  if (useCache) {
+  if (opts.useCache) {
     const cacheCheck = cache.get({
       type: task.type,
       description: task.description,
@@ -83,7 +109,7 @@ async function dispatch({
     payload: {
       task,
       context: enrichedContext,
-      artifacts: includeArtifacts ? artifacts : {},
+      artifacts: artifacts || {},
       requirements: {
         outputFormat: 'json',
         validationRequired: true,
@@ -97,7 +123,7 @@ async function dispatch({
     }
   };
 
-  manager.saveTransaction(command);
+  state.saveTransaction(command);
   
   if (activeSessionId) {
     const ctx = session.appendContext(activeSessionId, {
@@ -105,7 +131,6 @@ async function dispatch({
       taskId: task.id || txnId,
       taskType: task.type,
       input: { task, artifacts, context: enrichedContext },
-      dependencies: contextId ? [contextId] : [],
       artifacts: Object.values(artifacts || {})
     });
     
@@ -116,16 +141,37 @@ async function dispatch({
     transactionId: txnId,
     contextId: command._meta.contextId,
     command,
-    prompt: buildPrompt(command),
+    prompt: prompt.buildPrompt(command),
     cachedResult
   };
+}
+
+async function dispatchWithRetry(params, retryOptions = {}) {
+  const opts = { ...DEFAULT_OPTIONS, ...retryOptions };
+  
+  for (let attempt = 0; attempt <= opts.retry; attempt++) {
+    try {
+      return await dispatch(params);
+    } catch (err) {
+      if (attempt === opts.retry) {
+        throw err;
+      }
+      
+      const delay = opts.retryBackoff === 'exponential'
+        ? opts.retryDelay * Math.pow(2, attempt)
+        : opts.retryDelay;
+      
+      console.warn(`[dispatch] Attempt ${attempt + 1} failed: ${err.message}. Retrying in ${delay}ms...`);
+      await sleep(delay);
+    }
+  }
 }
 
 async function parallelDispatch(tasks, options = {}) {
   const { autoInjectContext = true, useCache = true } = options;
   
   const parallelTaskId = `parallel_${Date.now()}`;
-  const txnId = manager.generateTxnId();
+  const txnId = state.generateTxnId();
   
   const currentSession = session.getSession() || session.getSession();
   const activeSessionId = currentSession?.id;
@@ -177,7 +223,7 @@ async function parallelDispatch(tasks, options = {}) {
     _meta: { sessionId: activeSessionId }
   };
 
-  manager.saveTransaction(command);
+  state.saveTransaction(command);
   
   if (activeSessionId) {
     session.createParallelTask
@@ -187,7 +233,7 @@ async function parallelDispatch(tasks, options = {}) {
 
   const prompts = processedTasks.map(t => ({
     receiver: t.receiver,
-    prompt: buildPrompt({
+    prompt: prompt.buildPrompt({
       ...command,
       receiver: t.receiver,
       payload: t.payload
@@ -236,26 +282,17 @@ async function respond({ status, transactionId, taskId, result = null, error = n
     }
     
   } else if (status === 'failed') {
-    command.payload = {
-      taskId,
-      error
-    };
+    command.payload = { taskId, error };
     
     if (contextId && sessionId) {
-      session.completeContext(contextId, {
-        output: error,
-        success: false
-      });
+      session.completeContext(contextId, { output: error, success: false });
     }
     
   } else if (status === 'clarification-required') {
-    command.payload = {
-      taskId,
-      questions
-    };
+    command.payload = { taskId, questions };
   }
 
-  manager.saveTransaction(command);
+  state.saveTransaction(command);
   
   if (contextId && sessionId && status === 'clarification-required') {
     const chain = session.getContextChain(sessionId);
@@ -270,163 +307,26 @@ async function respond({ status, transactionId, taskId, result = null, error = n
 }
 
 async function updateProgress({ milestoneId, progress, taskCompleted = null }) {
-  const milestone = manager.updateMilestoneProgress(milestoneId, progress, taskCompleted);
+  const milestone = state.updateMilestoneProgress(milestoneId, progress, taskCompleted);
 
   const txn = {
     command: 'state-update',
     timestamp: new Date().toISOString(),
     payload: { milestoneId, progress: milestone?.progress, taskCompleted }
   };
-  manager.saveTransaction(txn);
+  state.saveTransaction(txn);
 
-  const data = manager.loadMilestones();
+  const data = state.loadMilestones();
   return { milestone, overallProgress: data.progress };
-}
-
-async function queryProgress({ milestoneId = null, includeSubtasks = false } = {}) {
-  const data = manager.loadMilestones();
-  const state = manager.getState();
-
-  if (milestoneId) {
-    const milestone = data.milestones.find(m => m.id === milestoneId);
-    return {
-      milestone,
-      overallProgress: data.progress,
-      currentState: state.currentState
-    };
-  }
-
-  return {
-    milestones: data.milestones.map(m => ({
-      id: m.id,
-      name: m.name,
-      status: m.status,
-      progress: m.progress,
-      deadline: m.deadline,
-      tasks: includeSubtasks ? m.tasks : undefined
-    })),
-    overallProgress: data.progress,
-    currentState: state.currentState,
-    parallelTasks: state.parallelTasks || [],
-    lastUpdate: state.lastUpdate
-  };
-}
-
-async function addMilestone({ name, description, deadline, tasks = [] }) {
-  return manager.addMilestone(name, description, deadline);
-}
-
-function buildPrompt(command) {
-  const { payload } = command;
-  const { task, context, artifacts, requirements } = payload;
-
-  let prompt = `# 任务调度\n\n`;
-  prompt += `## 任务信息\n`;
-  prompt += `- 任务ID: ${task.id || 'N/A'}\n`;
-  prompt += `- 任务类型: ${task.type || 'unknown'}\n`;
-  prompt += `- 任务描述: ${task.description || 'N/A'}\n`;
-  if (task.priority) prompt += `- 优先级: ${task.priority}\n`;
-
-  prompt += `\n## 上下文\n`;
-  prompt += `- 项目状态: ${context.projectState || 'unknown'}\n`;
-  prompt += `- 当前阶段: ${context.currentPhase || 'unknown'}\n`;
-  if (context.intent) prompt += `- 意图: ${context.intent}\n`;
-  if (context.workflow) prompt += `- 工作流: ${context.workflow}\n`;
-  
-  if (context.cacheHit) {
-    prompt += `- ⚠️ 缓存命中: ${context.cacheHit.type} (相似度 ${(context.cacheHit.similarity || 1) * 100}%)\n`;
-  }
-  
-  if (context.previousSummary) {
-    prompt += `\n## 前置执行摘要\n`;
-    prompt += `${context.previousSummary}\n`;
-  }
-  
-  if (context.relevantHistory && context.relevantHistory.length > 0) {
-    prompt += `\n## 相关历史\n`;
-    context.relevantHistory.forEach((h, i) => {
-      prompt += `${i + 1}. [${h.agent}] ${h.summary}\n`;
-      if (h.artifacts?.length) prompt += `   产出: ${h.artifacts.join(', ')}\n`;
-    });
-  }
-
-  if (Object.keys(artifacts).length > 0) {
-    prompt += `\n## 参考文档\n`;
-    for (const [key, value] of Object.entries(artifacts)) {
-      prompt += `- ${key}: ${value}\n`;
-    }
-  }
-
-  prompt += `\n## 要求\n`;
-  prompt += `- 输出格式: ${requirements.outputFormat || 'json'}\n`;
-  if (requirements.validationRequired) prompt += `- 需要自测验证\n`;
-  if (requirements.selfTestRequired) prompt += `- 需要自测通过\n`;
-
-  prompt += `\n---\n\n请执行任务并返回结果。\n`;
-
-  return prompt;
-}
-
-function getTransaction(txnId) {
-  const txs = manager.loadTransactions();
-  return txs.find(t => t.transactionId === txnId);
-}
-
-function getRecentTransactions(limit = 10) {
-  const txs = manager.loadTransactions();
-  return txs.slice(-limit);
-}
-
-function getContextChain(sessionId = null, limit = 50) {
-  return session.getContextChain(sessionId, limit);
-}
-
-function getLastContext(sessionId = null, agentType = null) {
-  return session.getLastContext(sessionId || session.getSession()?.id, agentType);
-}
-
-function injectContext(sessionId, agentType, task) {
-  const sid = sessionId || session.getSession()?.id;
-  return session.injectContext(sid, agentType, task);
-}
-
-function createSession(metadata) {
-  return session.createSession(metadata);
-}
-
-function endSession(sessionId) {
-  return session.endSession(sessionId);
-}
-
-function getCacheStats() {
-  return cache.getStats();
-}
-
-function clearCache() {
-  return cache.clear();
-}
-
-function cleanupCache() {
-  return cache.cleanup();
 }
 
 module.exports = {
   setCurrentAgent,
   dispatch,
+  dispatchWithRetry,
   parallelDispatch,
   respond,
   updateProgress,
-  queryProgress,
-  addMilestone,
-  buildPrompt,
-  getTransaction,
-  getRecentTransactions,
-  getContextChain,
-  getLastContext,
-  injectContext,
-  createSession,
-  endSession,
-  getCacheStats,
-  clearCache,
-  cleanupCache
+  sleep,
+  DEFAULT_OPTIONS
 };

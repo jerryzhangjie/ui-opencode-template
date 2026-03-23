@@ -1,0 +1,105 @@
+{
+  "milestones": [
+    {
+      "id": "ms_1774248583480",
+      "name": "新项目",
+      "description": "创建新项目",
+      "deadline": null,
+      "status": "completed",
+      "progress": 100,
+      "tasks": [],
+      "createdAt": "2026-03-23T06:49:43.480Z"
+    },
+    {
+      "id": "ms_1774248583495",
+      "name": "调整需求",
+      "description": "调整需求文档",
+      "deadline": null,
+      "status": "completed",
+      "progress": 100,
+      "tasks": [],
+      "createdAt": "2026-03-23T06:49:43.495Z"
+    },
+    {
+      "id": "ms_1774248583525",
+      "name": "生成页面",
+      "description": "生成登录页面",
+      "deadline": null,
+      "status": "completed",
+      "progress": 100,
+      "tasks": [],
+      "createdAt": "2026-03-23T06:49:43.525Z"
+    },
+    {
+      "id": "ms_1774248583540",
+      "name": "调整页面",
+      "description": "调整首页",
+      "deadline": null,
+      "status": "completed",
+      "progress": 100,
+      "tasks": [],
+      "createdAt": "2026-03-23T06:49:43.540Z"
+    },
+    {
+      "id": "ms_1774248709026",
+      "name": "新项目",
+      "description": "创建新项目",
+      "deadline": null,
+      "status": "completed",
+      "progress": 100,
+      "tasks": [],
+      "createdAt": "2026-03-23T06:51:49.026Z"
+    },
+    {
+      "id": "ms_1774248712103",
+      "name": "调整需求",
+      "description": "调整产品需求文档",
+      "deadline": null,
+      "status": "completed",
+      "progress": 100,
+      "tasks": [],
+      "createdAt": "2026-03-23T06:51:52.103Z"
+    },
+    {
+      "id": "ms_1774248723175",
+      "name": "调整页面: 页面",
+      "description": "调整页面",
+      "deadline": null,
+      "status": "completed",
+      "progress": 100,
+      "tasks": [],
+      "createdAt": "2026-03-23T06:52:03.175Z"
+    },
+    {
+      "id": "ms_1774248731095",
+      "name": "调整风格",
+      "description": "调整UI风格",
+      "deadline": null,
+      "status": "completed",
+      "progress": 100,
+      "tasks": [],
+      "createdAt": "2026-03-23T06:52:11.095Z"
+    },
+    {
+      "id": "ms_1774248736176",
+      "name": "生成页面: 登录页",
+      "description": "生成页面",
+      "deadline": null,
+      "status": "completed",
+      "progress": 100,
+      "tasks": [],
+      "createdAt": "2026-03-23T06:52:16.176Z"
+    },
+    {
+      "id": "ms_1774248744317",
+      "name": "调整页面: 首页",
+      "description": "调整页面",
+      "deadline": null,
+      "status": "completed",
+      "progress": 100,
+      "tasks": [],
+      "createdAt": "2026-03-23T06:52:24.317Z"
+    }
+  ],
+  "progress": 100
+}

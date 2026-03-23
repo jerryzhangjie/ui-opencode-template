@@ -1,0 +1,606 @@
+[
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248736223_ksbz9o",
+    "timestamp": "2026-03-23T06:52:16.234Z",
+    "sender": "project-manager",
+    "receiver": "ui-designer",
+    "payload": {
+      "task": {
+        "type": "uiWalkthrough",
+        "description": "UI走查"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:16.234Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248736238_eyavxe",
+    "timestamp": "2026-03-23T06:52:16.239Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "type": "fixUIWalkthroughIssue",
+        "description": "修复UI走查问题"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:16.242Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248736249_nt1wnd",
+    "timestamp": "2026-03-23T06:52:16.252Z",
+    "sender": "project-manager",
+    "receiver": "tester",
+    "payload": {
+      "task": {
+        "type": "functionalTest",
+        "description": "功能测试"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:16.253Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248736255_riccq5",
+    "timestamp": "2026-03-23T06:52:16.255Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "type": "fixFunctionalTestIssue",
+        "description": "修复功能测试问题"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:16.256Z"
+  },
+  {
+    "command": "parallel-dispatch",
+    "transactionId": "txn_1774248736257_bca3h6",
+    "timestamp": "2026-03-23T06:52:16.257Z",
+    "sender": "project-manager",
+    "parallelTaskId": "parallel_1774248736257",
+    "tasks": [
+      {
+        "receiver": "ui-designer",
+        "payload": {
+          "task": {
+            "type": "uiWalkthrough",
+            "description": "UI走查"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        },
+        "index": 0
+      },
+      {
+        "receiver": "tester",
+        "payload": {
+          "task": {
+            "type": "functionalTest",
+            "description": "功能测试"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        },
+        "index": 1
+      }
+    ],
+    "syncRequired": true,
+    "timeout": 300,
+    "_meta": {},
+    "loggedAt": "2026-03-23T06:52:16.258Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248736261_dax0en",
+    "timestamp": "2026-03-23T06:52:16.262Z",
+    "sender": "project-manager",
+    "receiver": "ui-designer",
+    "payload": {
+      "task": {
+        "type": "uiWalkthrough",
+        "description": "UI走查"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:16.265Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248736266_yoi5cl",
+    "timestamp": "2026-03-23T06:52:16.272Z",
+    "sender": "project-manager",
+    "receiver": "tester",
+    "payload": {
+      "task": {
+        "type": "functionalTest",
+        "description": "功能测试"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:16.272Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248744325_99p1v8",
+    "timestamp": "2026-03-23T06:52:24.328Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "type": "modifyPage",
+        "description": "调整首页页面"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:24.328Z"
+  },
+  {
+    "command": "parallel-dispatch",
+    "transactionId": "txn_1774248744338_skfru1",
+    "timestamp": "2026-03-23T06:52:24.338Z",
+    "sender": "project-manager",
+    "parallelTaskId": "parallel_1774248744338",
+    "tasks": [
+      {
+        "receiver": "ui-designer",
+        "payload": {
+          "task": {
+            "type": "uiWalkthrough",
+            "description": "UI走查"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        },
+        "index": 0
+      },
+      {
+        "receiver": "tester",
+        "payload": {
+          "task": {
+            "type": "functionalTest",
+            "description": "功能测试"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        },
+        "index": 1
+      }
+    ],
+    "syncRequired": true,
+    "timeout": 300,
+    "_meta": {},
+    "loggedAt": "2026-03-23T06:52:24.339Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248744340_620pt8",
+    "timestamp": "2026-03-23T06:52:24.341Z",
+    "sender": "project-manager",
+    "receiver": "ui-designer",
+    "payload": {
+      "task": {
+        "type": "uiWalkthrough",
+        "description": "UI走查"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:24.341Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248744342_o7xgto",
+    "timestamp": "2026-03-23T06:52:24.343Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "type": "fixUIWalkthroughIssue",
+        "description": "修复UI走查问题"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:24.344Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248744345_ovcs56",
+    "timestamp": "2026-03-23T06:52:24.357Z",
+    "sender": "project-manager",
+    "receiver": "tester",
+    "payload": {
+      "task": {
+        "type": "functionalTest",
+        "description": "功能测试"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:24.358Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248744358_rq7q9x",
+    "timestamp": "2026-03-23T06:52:24.359Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "type": "fixFunctionalTestIssue",
+        "description": "修复功能测试问题"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:24.359Z"
+  },
+  {
+    "command": "parallel-dispatch",
+    "transactionId": "txn_1774248744360_60hlpn",
+    "timestamp": "2026-03-23T06:52:24.360Z",
+    "sender": "project-manager",
+    "parallelTaskId": "parallel_1774248744360",
+    "tasks": [
+      {
+        "receiver": "ui-designer",
+        "payload": {
+          "task": {
+            "type": "uiWalkthrough",
+            "description": "UI走查"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        },
+        "index": 0
+      },
+      {
+        "receiver": "tester",
+        "payload": {
+          "task": {
+            "type": "functionalTest",
+            "description": "功能测试"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        },
+        "index": 1
+      }
+    ],
+    "syncRequired": true,
+    "timeout": 300,
+    "_meta": {},
+    "loggedAt": "2026-03-23T06:52:24.360Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248744361_8p1e53",
+    "timestamp": "2026-03-23T06:52:24.364Z",
+    "sender": "project-manager",
+    "receiver": "ui-designer",
+    "payload": {
+      "task": {
+        "type": "uiWalkthrough",
+        "description": "UI走查"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:24.364Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248744365_ao6z90",
+    "timestamp": "2026-03-23T06:52:24.365Z",
+    "sender": "project-manager",
+    "receiver": "tester",
+    "payload": {
+      "task": {
+        "type": "functionalTest",
+        "description": "功能测试"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:24.366Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248744368_31d7t6",
+    "timestamp": "2026-03-23T06:52:24.369Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "type": "fixFunctionalTestIssue",
+        "description": "修复功能测试问题"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:24.369Z"
+  },
+  {
+    "command": "parallel-dispatch",
+    "transactionId": "txn_1774248744372_i950g3",
+    "timestamp": "2026-03-23T06:52:24.372Z",
+    "sender": "project-manager",
+    "parallelTaskId": "parallel_1774248744372",
+    "tasks": [
+      {
+        "receiver": "ui-designer",
+        "payload": {
+          "task": {
+            "type": "uiWalkthrough",
+            "description": "UI走查"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        },
+        "index": 0
+      },
+      {
+        "receiver": "tester",
+        "payload": {
+          "task": {
+            "type": "functionalTest",
+            "description": "功能测试"
+          },
+          "context": {},
+          "artifacts": {},
+          "requirements": {
+            "outputFormat": "json",
+            "validationRequired": true,
+            "selfTestRequired": true
+          }
+        },
+        "index": 1
+      }
+    ],
+    "syncRequired": true,
+    "timeout": 300,
+    "_meta": {},
+    "loggedAt": "2026-03-23T06:52:24.374Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248744377_b9dkpd",
+    "timestamp": "2026-03-23T06:52:24.378Z",
+    "sender": "project-manager",
+    "receiver": "ui-designer",
+    "payload": {
+      "task": {
+        "type": "uiWalkthrough",
+        "description": "UI走查"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:24.378Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1774248744380_856w6l",
+    "timestamp": "2026-03-23T06:52:24.382Z",
+    "sender": "project-manager",
+    "receiver": "tester",
+    "payload": {
+      "task": {
+        "type": "functionalTest",
+        "description": "功能测试"
+      },
+      "context": {
+        "projectState": "developing"
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "useCache": false
+    },
+    "loggedAt": "2026-03-23T06:52:24.382Z"
+  }
+]

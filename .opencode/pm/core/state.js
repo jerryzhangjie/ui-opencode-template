@@ -1,30 +1,25 @@
 /**
- * Context Manager - 统一状态管理模块
+ * State Manager - 状态管理
  * 
- * 所有状态读写操作的唯一入口
- * 
- * 用法:
- *   const { getState, setState } = require('./manager');
- *   node manager.js --status   查看状态
- *   node manager.js --progress 查看进度
- *   node manager.js --clean    清理过期数据
+ * 功能：状态管理、里程碑管理、事务记录
+ * 特性：原子性写入、异常状态支持
  */
 
 const fs = require('fs');
 const path = require('path');
 
-const CONTEXT_DIR = '.opencode/context';
-const STATE_FILE = `${CONTEXT_DIR}/state.json`;
-const MILESTONE_FILE = `${CONTEXT_DIR}/milestones.json`;
-const TRANSACTION_FILE = `${CONTEXT_DIR}/transactions.json`;
+const DATA_DIR = path.join(__dirname, '..', 'data');
+const STATE_FILE = path.join(DATA_DIR, 'state.json');
+const MILESTONE_FILE = path.join(DATA_DIR, 'milestones.json');
+const TRANSACTION_FILE = path.join(DATA_DIR, 'transactions.json');
 
 const MAX_HISTORY = 20;
 const MAX_TRANSACTIONS = 20;
 const PARALLEL_TASK_CLEAN_AGE = 60 * 60 * 1000;
 
 function ensureDir() {
-  if (!fs.existsSync(CONTEXT_DIR)) {
-    fs.mkdirSync(CONTEXT_DIR, { recursive: true });
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
   }
 }
 
@@ -41,7 +36,9 @@ function loadJSON(filePath, defaultValue) {
 
 function saveJSON(filePath, data) {
   ensureDir();
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  const tempFile = filePath + '.tmp';
+  fs.writeFileSync(tempFile, JSON.stringify(data, null, 2));
+  fs.renameSync(tempFile, filePath);
   return data;
 }
 
@@ -157,7 +154,7 @@ function updateParallelTask(taskId, agentId, status, result = null) {
   return task;
 }
 
-function addMilestone(name, description, deadline = null) {
+function addMilestone(name, description = '', deadline = null) {
   const data = loadMilestones();
   const milestone = {
     id: `ms_${Date.now()}`,
@@ -224,21 +221,19 @@ function getProgress() {
   };
 }
 
-function cleanOldTransactions() {
+function generateTxnId() {
+  return `txn_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+}
+
+function cleanOldData() {
   const txs = loadTransactions();
   const cleaned = txs.slice(-MAX_TRANSACTIONS);
   if (cleaned.length < txs.length) {
     saveJSON(TRANSACTION_FILE, cleaned);
-    return { removed: txs.length - cleaned.length, remaining: cleaned.length };
   }
-  return { removed: 0, remaining: cleaned.length };
-}
 
-function cleanOldParallelTasks() {
   const state = loadState();
   const now = Date.now();
-  const before = state.parallelTasks.length;
-
   state.parallelTasks = state.parallelTasks.filter(t => {
     if (t.status === 'completed' || t.status === 'partial') {
       const created = new Date(t.createdAt).getTime();
@@ -247,116 +242,27 @@ function cleanOldParallelTasks() {
     return true;
   });
 
-  if (state.parallelTasks.length < before) {
-    saveState(state);
-  }
+  if (state.parallelTasks) saveState(state);
 
-  return { removed: before - state.parallelTasks.length, remaining: state.parallelTasks.length };
+  return { transactions: cleaned.length, parallelTasks: state.parallelTasks?.length || 0 };
 }
 
-function cleanAll() {
-  const txResult = cleanOldTransactions();
-  const ptResult = cleanOldParallelTasks();
-
-  return {
-    transactions: txResult,
-    parallelTasks: ptResult,
-    cleanedAt: new Date().toISOString()
-  };
-}
-
-function generateTxnId() {
-  return `txn_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-}
-
-function parseArgs() {
+if (require.main === module) {
   const args = process.argv.slice(2);
-  let status = false, progress = false, clean = false, help = false;
-
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--status' || args[i] === '-s') status = true;
-    else if (args[i] === '--progress' || args[i] === '-p') progress = true;
-    else if (args[i] === '--clean' || args[i] === '-c') clean = true;
-    else if (args[i] === '--help' || args[i] === '-h') help = true;
-  }
-
-  return { status, progress, clean, help };
-}
-
-function main() {
-  const opts = parseArgs();
-
-  if (opts.help) {
-    console.log(`
-Context Manager - 统一状态管理
-
-用法:
-  node context/manager.js --status    查看状态
-  node context/manager.js --progress  查看进度
-  node context/manager.js --clean     清理过期数据
-  node context/manager.js --help      显示帮助
-
-API:
-  const { getState, setState, addMilestone, ... } = require('./manager');
-`);
-    return;
-  }
-
-  if (opts.status) {
+  
+  if (args[0] === '--status') {
     const state = getState();
-    console.log(`\n# 项目状态
-
-当前状态: ${state.currentState}
-最后更新: ${state.lastUpdate || '无'}
-并行任务: ${state.parallelTasks?.length || 0}
-历史记录: ${state.history?.length || 0}
-`);
-    return;
-  }
-
-  if (opts.progress) {
+    console.log(`\n# 项目状态\n\n当前状态: ${state.currentState}\n最后更新: ${state.lastUpdate || '无'}\n`);
+  } else if (args[0] === '--progress') {
     const prog = getProgress();
-    console.log(`\n# 项目进度
-
-整体进度: ${prog.overallProgress}%
-当前状态: ${prog.currentState}
-最后更新: ${prog.lastUpdate || '无'}
-
-里程碑 (${prog.milestones.length}):`);
-    if (prog.milestones.length === 0) {
-      console.log('  (无里程碑)');
-    } else {
-      prog.milestones.forEach(m => {
-        const bar = '█'.repeat(Math.round(m.progress / 10)) + '░'.repeat(10 - Math.round(m.progress / 10));
-        console.log(`  [${bar}] ${m.name} (${m.progress}%) - ${m.status}`);
-      });
-    }
-
-    if (prog.parallelTasks.length > 0) {
-      console.log('\n并行任务:');
-      prog.parallelTasks.forEach(t => {
-        console.log(`  - ${t.id}: ${t.description} [${t.status}]`);
-      });
-    }
-    console.log('');
-    return;
+    console.log(`\n# 项目进度\n\n整体进度: ${prog.overallProgress}%\n当前状态: ${prog.currentState}\n里程碑: ${prog.milestones.length}\n`);
+  } else if (args[0] === '--clean') {
+    const result = cleanOldData();
+    console.log(`清理完成: ${result.transactions} 事务, ${result.parallelTasks} 并行任务`);
+  } else {
+    console.log('Usage: node state.js --status|--progress|--clean');
   }
-
-  if (opts.clean) {
-    const result = cleanAll();
-    console.log(`\n# 清理完成
-
-事务日志: 清理 ${result.transactions.removed} 条，剩余 ${result.transactions.remaining} 条
-并行任务: 清理 ${result.parallelTasks.removed} 个，剩余 ${result.parallelTasks.remaining} 个
-清理时间: ${result.cleanedAt}
-`);
-    return;
-  }
-
-  console.log('使用 --help 查看可用命令');
 }
-
-if (require.main === module) main();
 
 module.exports = {
   loadState, saveState,
@@ -365,7 +271,6 @@ module.exports = {
   getState, setState,
   createParallelTask, updateParallelTask,
   addMilestone, updateMilestoneProgress, getProgress,
-  cleanAll, cleanOldTransactions, cleanOldParallelTasks,
-  generateTxnId,
+  cleanOldData, generateTxnId,
   MAX_TRANSACTIONS, MAX_HISTORY
 };

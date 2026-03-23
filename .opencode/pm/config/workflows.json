@@ -1,0 +1,135 @@
+{
+  "createProject": {
+    "keywords": [
+      { "text": "新项目", "weight": 1.0 },
+      { "text": "从零开始", "weight": 1.0 },
+      { "text": "新建", "weight": 0.8 },
+      { "text": "无现有代码", "weight": 0.9 },
+      { "text": "做一个系统", "weight": 0.7 },
+      { "text": "创建项目", "weight": 0.8 }
+    ],
+    "agents": ["product-manager", "ui-designer"],
+    "parallel": true,
+    "phase": "planning",
+    "priority": 1
+  },
+  "addFeature": {
+    "keywords": [
+      { "text": "添加功能", "weight": 1.0 },
+      { "text": "添加", "weight": 0.9 },
+      { "text": "新增功能", "weight": 1.0 },
+      { "text": "新增", "weight": 0.8 },
+      { "text": "加一个", "weight": 0.7 },
+      { "text": "加个", "weight": 0.7 },
+      { "text": "做个功能", "weight": 0.9 },
+      { "text": "写个功能", "weight": 0.9 }
+    ],
+    "agents": ["frontend-developer"],
+    "parallel": false,
+    "phase": "development",
+    "priority": 3,
+    "requiresTest": true
+  },
+  "modifyPage": {
+    "keywords": [
+      { "text": "修改页面", "weight": 1.0 },
+      { "text": "改动页面", "weight": 0.9 },
+      { "text": "调整页面", "weight": 0.8 },
+      { "text": "改一下", "weight": 0.5 }
+    ],
+    "agents": ["frontend-developer", "ui-designer"],
+    "parallel": false,
+    "phase": "development",
+    "priority": 3,
+    "requiresWalkthrough": true,
+    "requiresTest": true
+  },
+  "adjustStyle": {
+    "keywords": [
+      { "text": "调整风格", "weight": 1.0 },
+      { "text": "换主题", "weight": 1.0 },
+      { "text": "深色模式", "weight": 0.9 },
+      { "text": "浅色模式", "weight": 0.9 },
+      { "text": "换配色", "weight": 0.9 },
+      { "text": "样式调整", "weight": 0.7 },
+      { "text": "好看一点", "weight": 0.6 }
+    ],
+    "agents": ["ui-designer", "frontend-developer"],
+    "parallel": false,
+    "phase": "development",
+    "priority": 4,
+    "requiresWalkthrough": true,
+    "requiresTest": true
+  },
+  "fixIssue": {
+    "keywords": [
+      { "text": "修复", "weight": 1.0 },
+      { "text": "解决", "weight": 0.9 },
+      { "text": "修一下", "weight": 0.8 },
+      { "text": "修bug", "weight": 1.0 },
+      { "text": "bug", "weight": 0.6 }
+    ],
+    "agents": ["frontend-developer"],
+    "parallel": false,
+    "phase": "verification",
+    "priority": 1,
+    "requiresTest": true
+  },
+  "generatePage": {
+    "keywords": [
+      { "text": "生成页面", "weight": 1.0 },
+      { "text": "做个页面", "weight": 1.0 },
+      { "text": "写个页面", "weight": 1.0 },
+      { "text": "新建页面", "weight": 1.0 },
+      { "text": "做一个页面", "weight": 0.9 },
+      { "text": "做个", "weight": 0.8 },
+      { "text": "做页面", "weight": 0.9 },
+      { "text": "写页面", "weight": 0.9 }
+    ],
+    "agents": ["frontend-developer", "ui-designer"],
+    "parallel": false,
+    "phase": "development",
+    "priority": 2,
+    "requiresWalkthrough": true,
+    "requiresTest": true
+  },
+  "optimize": {
+    "keywords": [
+      { "text": "优化", "weight": 1.0 },
+      { "text": "改进", "weight": 0.8 },
+      { "text": "完善", "weight": 0.7 },
+      { "text": "提升性能", "weight": 1.0 }
+    ],
+    "agents": ["frontend-developer"],
+    "parallel": false,
+    "phase": "development",
+    "priority": 5
+  },
+  "requirementChange": {
+    "keywords": [
+      { "text": "需求变更", "weight": 1.0 },
+      { "text": "改需求", "weight": 1.0 },
+      { "text": "需求变了", "weight": 0.9 },
+      { "text": "调整需求", "weight": 0.8 }
+    ],
+    "agents": ["product-manager"],
+    "parallel": false,
+    "phase": "planning",
+    "priority": 1,
+    "requiresDocUpdate": true
+  },
+  "queryStatus": {
+    "keywords": [
+      { "text": "状态", "weight": 0.6 },
+      { "text": "进度", "weight": 0.8 },
+      { "text": "完成情况", "weight": 0.9 },
+      { "text": "怎么样了", "weight": 0.5 },
+      { "text": "还要多久", "weight": 0.6 }
+    ],
+    "agents": ["general"],
+    "parallel": false,
+    "phase": "any",
+    "priority": 10,
+    "isQuery": true
+  }
+}

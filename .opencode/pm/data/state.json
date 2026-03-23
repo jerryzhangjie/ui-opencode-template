@@ -1,0 +1,105 @@
+{
+  "currentState": "developing",
+  "history": [
+    {
+      "from": "init",
+      "to": "planning",
+      "time": "2026-03-23T06:49:43.479Z",
+      "note": "开始新建项目",
+      "branch": "main"
+    },
+    {
+      "from": "planning",
+      "to": "completed",
+      "time": "2026-03-23T06:49:43.484Z",
+      "note": "项目创建完成",
+      "branch": "main"
+    },
+    {
+      "from": "completed",
+      "to": "interrupted",
+      "time": "2026-03-23T06:49:43.490Z",
+      "note": "需求变更中",
+      "branch": "main"
+    },
+    {
+      "from": "interrupted",
+      "to": "planning",
+      "time": "2026-03-23T06:49:43.502Z",
+      "note": "需求已更新",
+      "branch": "main"
+    },
+    {
+      "from": "planning",
+      "to": "developing",
+      "time": "2026-03-23T06:49:43.524Z",
+      "note": "生成页面中",
+      "branch": "main"
+    },
+    {
+      "from": "developing",
+      "to": "developing",
+      "time": "2026-03-23T06:49:43.537Z",
+      "note": "调整页面中",
+      "branch": "main"
+    },
+    {
+      "from": "developing",
+      "to": "planning",
+      "time": "2026-03-23T06:51:49.024Z",
+      "note": "开始新建项目",
+      "branch": "main"
+    },
+    {
+      "from": "planning",
+      "to": "completed",
+      "time": "2026-03-23T06:51:49.032Z",
+      "note": "项目创建完成",
+      "branch": "main"
+    },
+    {
+      "from": "completed",
+      "to": "interrupted",
+      "time": "2026-03-23T06:51:52.102Z",
+      "note": "需求变更中",
+      "branch": "main"
+    },
+    {
+      "from": "interrupted",
+      "to": "planning",
+      "time": "2026-03-23T06:51:52.119Z",
+      "note": "需求已更新",
+      "branch": "main"
+    },
+    {
+      "from": "planning",
+      "to": "developing",
+      "time": "2026-03-23T06:52:03.174Z",
+      "note": "调整页面中",
+      "branch": "main"
+    },
+    {
+      "from": "developing",
+      "to": "developing",
+      "time": "2026-03-23T06:52:11.094Z",
+      "note": "调整风格中",
+      "branch": "main"
+    },
+    {
+      "from": "developing",
+      "to": "developing",
+      "time": "2026-03-23T06:52:16.172Z",
+      "note": "生成页面中",
+      "branch": "main"
+    },
+    {
+      "from": "developing",
+      "to": "developing",
+      "time": "2026-03-23T06:52:24.316Z",
+      "note": "调整页面中",
+      "branch": "main"
+    }
+  ],
+  "parallelTasks": [],
+  "lastUpdate": "2026-03-23T06:52:24.316Z"
+}
