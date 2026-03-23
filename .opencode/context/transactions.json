@@ -1,1 +1,158 @@
-[]
+[
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1773990861838_y3hweo",
+    "timestamp": "2026-03-20T07:14:21.841Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "id": "task_login",
+        "type": "generatePage",
+        "description": "生成登录页面"
+      },
+      "context": {
+        "projectState": "developing",
+        "previousOutput": null,
+        "previousArtifacts": [],
+        "previousSummary": "",
+        "relevantHistory": [
+          {
+            "id": "ctx_1773990861832_ee458fc4",
+            "agent": "product-manager",
+            "taskType": "generatePRD",
+            "summary": "PRD生成完成",
+            "artifacts": [
+              "doc/PRD-test.md"
+            ],
+            "completedAt": "2026-03-20T07:14:21.834Z"
+          }
+        ]
+      },
+      "artifacts": {
+        "prd": "doc/PRD-test.md"
+      },
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "sessionId": "sess_1773990861830_389659a8",
+      "useCache": false
+    },
+    "loggedAt": "2026-03-20T07:14:21.841Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1773990894097_61nrxq",
+    "timestamp": "2026-03-20T07:14:54.101Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "id": "t1",
+        "type": "generatePage",
+        "description": "test"
+      },
+      "context": {
+        "projectState": "developing",
+        "previousOutput": null,
+        "previousArtifacts": [],
+        "previousSummary": "",
+        "relevantHistory": []
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "sessionId": "sess_1773990894093_7f2f7d21",
+      "useCache": false
+    },
+    "loggedAt": "2026-03-20T07:14:54.102Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1773990903399_y6mdd8",
+    "timestamp": "2026-03-20T07:15:03.404Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "id": "t1",
+        "type": "generatePage",
+        "description": "test"
+      },
+      "context": {
+        "projectState": "developing",
+        "previousOutput": null,
+        "previousArtifacts": [],
+        "previousSummary": "",
+        "relevantHistory": []
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "sessionId": "sess_1773990903396_2419bd23",
+      "useCache": false
+    },
+    "loggedAt": "2026-03-20T07:15:03.404Z"
+  },
+  {
+    "command": "dispatch",
+    "transactionId": "txn_1773990913663_l4crg1",
+    "timestamp": "2026-03-20T07:15:13.666Z",
+    "sender": "project-manager",
+    "receiver": "frontend-developer",
+    "payload": {
+      "task": {
+        "id": "task_register",
+        "type": "generatePage",
+        "description": "生成注册页面"
+      },
+      "context": {
+        "projectState": "developing",
+        "previousOutput": {
+          "success": true
+        },
+        "previousArtifacts": [
+          "src/views/Login.vue"
+        ],
+        "previousSummary": "登录页面开发完成",
+        "relevantHistory": [
+          {
+            "id": "ctx_1773990913658_b72fc2c6",
+            "agent": "frontend-developer",
+            "taskType": "generatePage",
+            "summary": "登录页面开发完成",
+            "artifacts": [
+              "src/views/Login.vue"
+            ],
+            "completedAt": "2026-03-20T07:15:13.660Z"
+          }
+        ]
+      },
+      "artifacts": {},
+      "requirements": {
+        "outputFormat": "json",
+        "validationRequired": true,
+        "selfTestRequired": true
+      }
+    },
+    "_meta": {
+      "sessionId": "sess_1773990913656_18cd9225",
+      "useCache": false
+    },
+    "loggedAt": "2026-03-20T07:15:13.666Z"
+  }
+]

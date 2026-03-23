@@ -1,0 +1,151 @@
+{
+  "sessions": [
+    {
+      "id": "sess_1773990811939_a536f38d",
+      "metadata": {
+        "createdAt": "2026-03-20T07:13:31.942Z",
+        "updatedAt": "2026-03-20T07:13:31.942Z",
+        "source": "cli"
+      },
+      "state": "init",
+      "rootContextId": null,
+      "currentContextId": null,
+      "stats": {
+        "totalTasks": 0,
+        "completedTasks": 0,
+        "failedTasks": 0
+      }
+    },
+    {
+      "id": "sess_1773990832941_2520be97",
+      "metadata": {
+        "createdAt": "2026-03-20T07:13:52.942Z",
+        "updatedAt": "2026-03-20T07:13:52.946Z",
+        "source": "test",
+        "endedAt": "2026-03-20T07:13:52.954Z"
+      },
+      "state": "ended",
+      "rootContextId": null,
+      "currentContextId": "ctx_1773990832945_f606fc87",
+      "stats": {
+        "totalTasks": 0,
+        "completedTasks": 0,
+        "failedTasks": 0
+      },
+      "stats.totalTasks": 1
+    },
+    {
+      "id": "sess_1773990847533_fe57cd22",
+      "metadata": {
+        "createdAt": "2026-03-20T07:14:07.533Z",
+        "updatedAt": "2026-03-20T07:14:07.538Z",
+        "source": "test",
+        "endedAt": "2026-03-20T07:14:07.542Z"
+      },
+      "state": "ended",
+      "rootContextId": null,
+      "currentContextId": "ctx_1773990847536_bccbd931",
+      "stats": {
+        "totalTasks": 0,
+        "completedTasks": 0,
+        "failedTasks": 0
+      },
+      "stats.totalTasks": 1,
+      "stats.completedTasks": 1,
+      "stats.failedTasks": 0
+    },
+    {
+      "id": "sess_1773990861830_389659a8",
+      "metadata": {
+        "createdAt": "2026-03-20T07:14:21.830Z",
+        "updatedAt": "2026-03-20T07:14:21.843Z",
+        "source": "integration-test",
+        "endedAt": "2026-03-20T07:14:21.845Z"
+      },
+      "state": "ended",
+      "rootContextId": null,
+      "currentContextId": "ctx_1773990861843_e8c3ce3e",
+      "stats": {
+        "totalTasks": 0,
+        "completedTasks": 0,
+        "failedTasks": 0
+      },
+      "stats.totalTasks": 1,
+      "stats.completedTasks": 1,
+      "stats.failedTasks": 0
+    },
+    {
+      "id": "sess_1773990874452_33b54980",
+      "metadata": {
+        "createdAt": "2026-03-20T07:14:34.452Z",
+        "updatedAt": "2026-03-20T07:14:34.452Z",
+        "source": "test",
+        "endedAt": "2026-03-20T07:14:34.473Z"
+      },
+      "state": "ended",
+      "rootContextId": null,
+      "currentContextId": null,
+      "stats": {
+        "totalTasks": 0,
+        "completedTasks": 0,
+        "failedTasks": 0
+      }
+    },
+    {
+      "id": "sess_1773990894093_7f2f7d21",
+      "metadata": {
+        "createdAt": "2026-03-20T07:14:54.094Z",
+        "updatedAt": "2026-03-20T07:14:54.104Z",
+        "source": "test"
+      },
+      "state": "init",
+      "rootContextId": null,
+      "currentContextId": "ctx_1773990894103_fc84c84c",
+      "stats": {
+        "totalTasks": 0,
+        "completedTasks": 0,
+        "failedTasks": 0
+      },
+      "stats.totalTasks": 1
+    },
+    {
+      "id": "sess_1773990903396_2419bd23",
+      "metadata": {
+        "createdAt": "2026-03-20T07:15:03.396Z",
+        "updatedAt": "2026-03-20T07:15:03.406Z",
+        "source": "test",
+        "endedAt": "2026-03-20T07:15:03.408Z"
+      },
+      "state": "ended",
+      "rootContextId": null,
+      "currentContextId": "ctx_1773990903405_5c507280",
+      "stats": {
+        "totalTasks": 0,
+        "completedTasks": 0,
+        "failedTasks": 0
+      },
+      "stats.totalTasks": 1
+    },
+    {
+      "id": "sess_1773990913656_18cd9225",
+      "metadata": {
+        "createdAt": "2026-03-20T07:15:13.656Z",
+        "updatedAt": "2026-03-20T07:15:13.669Z",
+        "source": "test",
+        "endedAt": "2026-03-20T07:15:13.670Z"
+      },
+      "state": "ended",
+      "rootContextId": null,
+      "currentContextId": "ctx_1773990913667_61b2e7bc",
+      "stats": {
+        "totalTasks": 0,
+        "completedTasks": 0,
+        "failedTasks": 0
+      },
+      "stats.totalTasks": 1,
+      "stats.completedTasks": 1,
+      "stats.failedTasks": 0
+    }
+  ],
+  "activeSession": "sess_1773990894093_7f2f7d21"
+}

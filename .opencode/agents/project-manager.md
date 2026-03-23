@@ -175,15 +175,42 @@ node .opencode/scripts/enhanced-decision/index.js --progress
 
 ---
 
-## 标准化通信契约
+## 标准化通信契约 v2
 
-### 调度 SubAgent
+### 上下文管理
 
 ```javascript
-const { dispatch, parallelDispatch } = require('.opencode/scripts/enhanced-decision/contract');
+const { 
+  createSession,           // 创建会话
+  getContextChain,         // 获取上下文链
+  getLastContext,          // 获取最近上下文
+  injectContext,           // 注入上下文
+  getCacheStats,           // 缓存统计
+  clearCache               // 清空缓存
+} = require('.opencode/scripts/enhanced-decision/contract');
 
-// 标准调度
-const { transactionId, prompt } = await dispatch({
+// 创建新会话
+const session = createSession({ source: 'user-request', project: 'xxx' });
+
+// 获取Agent最近执行上下文
+const lastContext = getLastContext(session.id, 'frontend-developer');
+// 返回: { id, agent, taskType, output, artifacts, summary, ... }
+
+// 手动注入上下文
+const ctx = injectContext(session.id, 'frontend-developer', {
+  type: 'generatePage',
+  description: '生成登录页面',
+  artifacts: ['doc/prd.md']
+});
+```
+
+### 调度 SubAgent (含上下文注入)
+
+```javascript
+const { dispatch, parallelDispatch, respond } = require('.opencode/scripts/enhanced-decision/contract');
+
+// 标准调度 - 自动注入前置上下文
+const { transactionId, contextId, prompt, cachedResult } = await dispatch({
   receiver: 'frontend-developer',
   task: {
     id: 'task_login',
@@ -194,32 +221,69 @@ const { transactionId, prompt } = await dispatch({
   artifacts: {
     prd: 'doc/PRD-login.md',
     ui: 'doc/UI-login.md'
-  }
+  },
+  autoInjectContext: true,    // 默认开启
+  useCache: true,            // 默认开启
+  sessionId: session.id      // 指定会话
 });
+
+// cachedResult: 若命中缓存，返回缓存结果
+if (cachedResult) {
+  console.log('使用缓存结果:', cachedResult);
+}
 ```
 
 ### 并行调度
 
 ```javascript
-const { parallelTaskId, prompts } = await parallelDispatch([
+const { parallelTaskId, prompts, sessionId } = await parallelDispatch([
   { receiver: 'product-manager', task: { id: 't1', type: 'generatePRD' } },
   { receiver: 'ui-designer', task: { id: 't2', type: 'generateUI' } }
-]);
+], { autoInjectContext: true, useCache: true });
 ```
 
 ### 解析 SubAgent 响应
 
 ```javascript
-const { respond } = require('.opencode/scripts/enhanced-decision/contract');
-
-// 成功响应
-respond({ status: 'success', transactionId, taskId: 'task_login', result: { filesCreated: [...] } });
+// 成功响应 - 自动存入上下文链和缓存
+respond({ 
+  status: 'success', 
+  transactionId, 
+  taskId: 'task_login', 
+  result: { filesCreated: [...], summary: '完成登录功能' },
+  contextId,       // dispatch 返回的 contextId
+  sessionId,       // 当前会话ID
+  useCache: true   // 是否存入缓存
+});
 
 // 失败响应
-respond({ status: 'failed', transactionId, taskId: 'task_login', error: { code: 'BLOCKED_BY_DEP', message: '...' } });
+respond({ 
+  status: 'failed', 
+  transactionId, 
+  taskId: 'task_login', 
+  error: { code: 'BLOCKED_BY_DEP', message: '...' },
+  contextId,
+  sessionId
+});
 
 // 需要澄清
 respond({ status: 'clarification-required', transactionId, taskId: 'task_login', questions: [...] });
+```
+
+### CLI 命令
+
+```bash
+# 上下文管理
+node .opencode/context/session.js --status        # 查看会话状态
+node .opencode/context/session.js --history       # 查看上下文链
+node .opencode/context/session.js --tree          # 查看上下文树
+node .opencode/context/session.js --new           # 创建新会话
+node .opencode/context/session.js --clean         # 清理过期会话
+
+# 缓存管理
+node .opencode/context/cache.js --stats          # 查看缓存统计
+node .opencode/context/cache.js --clear           # 清空缓存
+node .opencode/context/cache.js --clean           # 清理过期条目
 ```
 
 ---
@@ -473,6 +537,46 @@ respond({ status: 'clarification-required', transactionId, taskId: 'task_login',
 | 所有流程 | 状态记录 | `.opencode/context/state.json` |
 | 所有流程 | 里程碑 | `.opencode/context/milestones.json` |
 | 所有流程 | 事务日志 | `.opencode/context/transactions.json` |
+| 所有流程 | 会话上下文 | `.opencode/context/sessions.json` |
+| 所有流程 | 上下文链 | `.opencode/context/context_chain.json` |
+| 所有流程 | 结果缓存 | `.opencode/context/cache.json` |
+
+---
+
+## 上下文管理流程
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  1. createSession() → 创建新会话                            │
+│                         ↓                                    │
+│  2. dispatch() → 自动注入前置上下文                          │
+│       - previousOutput: 前置Agent产出                       │
+│       - previousArtifacts: 前置Artifact列表                  │
+│       - relevantHistory: 相关历史执行                        │
+│       - cacheHit: 缓存命中信息（若有）                        │
+│                         ↓                                    │
+│  3. respond() → 完成上下文                                  │
+│       - 存入context_chain                                   │
+│       - 存入cache（成功时）                                  │
+│                         ↓                                    │
+│  4. 下一任务 → 回到步骤2，自动获取最新上下文                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 缓存机制
+
+| 配置项 | 默认值 | 说明 |
+|--------|--------|------|
+| TTL | 30分钟 | 缓存有效期 |
+| 相似度阈值 | 85% | 判定为相同任务的阈值 |
+| 最大条目数 | 100 | LRU淘汰上限 |
+
+| 缓存类型 | 说明 |
+|----------|------|
+| exact | 任务指纹完全匹配 |
+| similar | 任务描述和类型相似度 ≥ 85% |
 
 ---
 
