@@ -85,46 +85,46 @@ src/
 
 ## 决策引擎
 
-简化架构：利用LLM自身能力理解意图，最小化规则配置。
+项目经理使用工作流引擎调度各Agent执行任务。
 
 ### 调用方式
 
 ```javascript
-const { decide } = require('.opencode/scripts/simplified/index');
-const result = decide('用户输入');
-// 返回: { intent, workflow, agent, agents, entities, parallel, skill, ... }
+const pm = require('.opencode/pm');
+const { execute } = require('.opencode/pm/core/workflow');
+
+const decision = pm.decide('用户输入');
+// 返回: { intent, workflow, agents, entities, parallel, ... }
+
+await execute('用户输入');
+// 执行完整工作流
 ```
 
 ### CLI 调用
 ```bash
-node .opencode/scripts/simplified/index.js --input "添加登录功能"
-node .opencode/scripts/simplified/index.js --status
+node .opencode/pm/index.js --input "添加登录功能"
+node .opencode/pm/index.js --status
+node .opencode/pm/index.js --progress
+node .opencode/pm/core/workflow.js "生成登录页面"
 ```
 
-### 意图类型
-| 类型 | 说明 | 关键词示例 |
-|------|------|-----------|
-| Query | 查询类 | 状态、进度、问题 |
-| Action | 执行类 | 添加、修改、优化、生成 |
-| Consult | 咨询类 | 怎么、如何、建议 |
-| Problem | 问题类 | 慢、错、报错 |
-| Change | 变更类 | 需求变更、调整 |
+### 工作流
+| 工作流 | 说明 | 调度顺序 |
+|--------|------|----------|
+| createProject | 新建项目 | PM + UI 并行 |
+| requirementChange | 调整需求文档 | PM → 终止 |
+| adjustStyle | 调整风格 | UI → 前端 → 验证循环 → 终止 |
+| generatePage | 生成页面 | 前端 → 验证循环 → 终止 |
+| modifyPage | 调整页面 | 前端 → 验证循环 → 终止 |
 
-### 常见工作流
-| 工作流 | Agent | 说明 |
-|--------|-------|------|
-| createProject | PM + UI | 新建项目（并行） |
-| addFeature | frontend-developer | 添加功能 |
-| fixIssue | frontend-developer | 修复问题 |
-| adjustStyle | ui-designer | 调整样式 |
-| generatePage | frontend-developer | 生成页面 |
+### 验证循环
 
-### 状态管理
-```javascript
-const { getState, setState } = require('.opencode/scripts/simplified/index');
-getState();           // { currentState, history }
-setState('developing', '开始开发');
-```
+验证循环在 generatePage/modifyPage/adjustStyle 工作流中执行：
+1. 并行调用 UI走查 + 功能测试
+2. 若存在UI问题 → 前端修复 → UI走查（循环）
+3. 若存在测试问题 → 前端修复 → 功能测试（循环）
+4. 最多5次迭代
+5. 检查工程状态 → 交付
 
 ---
 
