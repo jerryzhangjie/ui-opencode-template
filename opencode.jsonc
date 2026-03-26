@@ -6,6 +6,5 @@
     "prune": true,
     "reserved": 10000
   },
-  "instructions": ["./AGENTS.md"],
-  "workflow_engine": ".opencode/pm/core/workflow.js"
+  "instructions": ["./AGENTS.md"]
 }
