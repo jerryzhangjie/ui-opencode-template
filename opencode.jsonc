@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "model": "deepseek/deepseek-reasoner",
   "default_agent": "project-manager",
   "compaction": {
     "auto": true,
