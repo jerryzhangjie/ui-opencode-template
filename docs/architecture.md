@@ -392,3 +392,23 @@ await execute('添加用户管理功能');
 │   └── ui-ux-pro-max/
 └── config.json               # OpenCode 配置
 ```
+
+
+
+意图。           意图（8）
+
+规划agent。      硬编码（8）
+
+按顺序调度
+
+
+优化方案：
+agent调度流程硬编码，改为主agent规划，对规划出的agent调度再执行硬编码(强约束确保质量和调度自由度????)
+
+流式输出的类型，可以在opencode源码中的提示词中查阅到
+
+借鉴claudecode记录状态的机制实现右侧任务进展面板数据（暂时不做，先按opencode自行写文件来实现）
+
+对话始终在跟主agent对话（暂定，opencode实则支持与子agent对话）
+
+
